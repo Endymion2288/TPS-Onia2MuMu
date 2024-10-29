@@ -563,7 +563,15 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 
     // Initialize the muon track block [Annotated by Eric Wang, 20240704]
 
-	if (thePATMuonHandle->size() >= 2) // Require at least 2 muons present [Annotated by Eric Wang, 20240704]
+    // Visualize number of muons
+    std::cout << "Number of muons: " << thePATMuonHandle->size();
+    for (unsigned int i = 0; i <= thePATMuonHandle->size(); i++)
+    {
+        std::cout << "   [++++]   " << std::endl;
+    }
+    std::cout << std::endl;
+
+	if (thePATMuonHandle->size() >= 6) // Require at least 6 muons present [Annotated by Eric Wang, 20240704]
 	{
 		vector<std::string> theInputVariables;
 		theInputVariables.push_back("validFrac");
@@ -733,7 +741,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
     KinematicParticleFactoryFromTransientTrack muPairFactory;
 
     // Will be working reco from 3 pairs of muons. 
-	if (thePATMuonHandle->size() < 2)
+	if (thePATMuonHandle->size() < 6)
 	{
 		return;
 	}
@@ -792,12 +800,12 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			}
             // Dynamics selection. A very crude selection.
             // Involves more calculation and is therefore done after kinematics.
-            // isJpsiMuPair = (1. < (iMuon1->p4() + iMuon2->p4()).mass()
-            //                   && (iMuon1->p4() + iMuon2->p4()).mass() < 4.);
-            // isUpsMuPair  = (8. < (iMuon1->p4() + iMuon2->p4()).mass()
-            //                   && (iMuon1->p4() + iMuon2->p4()).mass() < 12.);
-            isJpsiMuPair = true;
-            isUpsMuPair  = true;
+            isJpsiMuPair = (2 < (iMuon1->p4() + iMuon2->p4()).mass()
+                              && (iMuon1->p4() + iMuon2->p4()).mass() < 6);
+            isUpsMuPair  = (8. < (iMuon1->p4() + iMuon2->p4()).mass()
+                              && (iMuon1->p4() + iMuon2->p4()).mass() < 12.);
+            // isJpsiMuPair = true;
+            // isUpsMuPair  = true;
             if((!isJpsiMuPair) && (!isUpsMuPair)){
                 continue;
             }
@@ -868,16 +876,16 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
         for(auto muPair_Jpsi_2  = muPair_Jpsi_1 + 1; 
                  muPair_Jpsi_2 != muPairCand_Jpsi.end(); muPair_Jpsi_2++){
             // Check if the muon pairs overlap.
-            // if(isOverlapPair(*muPair_Jpsi_1, *muPair_Jpsi_2)){
-            //     continue;
-            // }
+            if(isOverlapPair(*muPair_Jpsi_1, *muPair_Jpsi_2)){
+                 continue;
+            }
             for(auto muPair_Ups  = muPairCand_Ups.begin(); 
                      muPair_Ups != muPairCand_Ups.end(); muPair_Ups++){
                 // Check if the muon pairs overlap again.
-                // if( isOverlapPair(*muPair_Jpsi_1, *muPair_Ups) || 
-                //     isOverlapPair(*muPair_Jpsi_2, *muPair_Ups)   ){
-                //     continue;
-                // }
+                if( isOverlapPair(*muPair_Jpsi_1, *muPair_Ups) || 
+                    isOverlapPair(*muPair_Jpsi_2, *muPair_Ups)   ){
+                    continue;
+                }
                 // Initialize the marker for primary vertex
                 isValidPri = false;
                 // Start constructing the fit tree.
@@ -907,11 +915,16 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                         interOnia.push_back(Ups_Fit_noMC);
                         // Fit the quarkonia to the same vertex
                         isValidPri = particlesToVtx(vtxFitTree_Pri, interOnia, "primary vertex");
-			interOnia.clear();
+			            interOnia.clear();
+                        std::cout << "Found candidate" << std::endl;
+                        std::cout << "Jpsi_1: " << Jpsi_1_Fit_noMC->currentState().mass() << std::endl;
+                        std::cout << "Jpsi_2: " << Jpsi_2_Fit_noMC->currentState().mass() << std::endl;
+                        std::cout << "Ups: " << Ups_Fit_noMC->currentState().mass() << std::endl;
                     }
                 }
                 // Work with all fit results above. (Jpsi_1, Jpsi_2, Ups, Pri)
                 // Primary vertex fitting comes first.
+  
 
                 if(isValidPri){
                     // Extract the vertex and the particle parameters from valid results.
