@@ -199,23 +199,23 @@ MultiLepPAT::MultiLepPAT(const edm::ParameterSet &iConfig)
 
       Jpsi_1_mu_1_Idx(0), Jpsi_1_mu_2_Idx(0),
       Jpsi_2_mu_1_Idx(0), Jpsi_2_mu_2_Idx(0),
-	     Ups_mu_1_Idx(0),    Ups_mu_2_Idx(0),
+	     Phi_pi_1_Idx(0),    Phi_pi_2_Idx(0),
 
       Jpsi_1_mass(0), Jpsi_1_massErr(0), Jpsi_1_massDiff(0),
       Jpsi_2_mass(0), Jpsi_2_massErr(0), Jpsi_2_massDiff(0),
-         Ups_mass(0),    Ups_massErr(0),    Ups_massDiff(0),
+         Phi_mass(0),    Phi_massErr(0),    Phi_massDiff(0),
 
       Jpsi_1_ctau(0), Jpsi_1_ctauErr(0), Jpsi_1_Chi2(0), Jpsi_1_ndof(0), Jpsi_1_VtxProb(0),
       Jpsi_2_ctau(0), Jpsi_2_ctauErr(0), Jpsi_2_Chi2(0), Jpsi_2_ndof(0), Jpsi_2_VtxProb(0),
-                                            Ups_Chi2(0),    Ups_ndof(0),    Ups_VtxProb(0),
+                                            Phi_Chi2(0),    Phi_ndof(0),    Phi_VtxProb(0),
       
       Jpsi_1_phi(0), Jpsi_1_eta(0), Jpsi_1_pt(0),
       Jpsi_2_phi(0), Jpsi_2_eta(0), Jpsi_2_pt(0),
-         Ups_phi(0),    Ups_eta(0),    Ups_pt(0),
+         Phi_phi(0),    Phi_eta(0),    Phi_pt(0),
 
       Jpsi_1_px(0), Jpsi_1_py(0), Jpsi_1_pz(0),
       Jpsi_2_px(0), Jpsi_2_py(0), Jpsi_2_pz(0),
-         Ups_px(0),    Ups_py(0),    Ups_pz(0),
+         Phi_px(0),    Phi_py(0),    Phi_pz(0),
       
          Pri_mass(0),  Pri_massErr(0),
          Pri_ctau(0),  Pri_ctauErr(0), Pri_Chi2(0), Pri_ndof(0), Pri_VtxProb(0),
@@ -842,9 +842,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
     for(std::vector<edm::View<pat::PackedCandidate>::const_iterator>::const_iterator iTrack1ID = nonMuonPionTrack.begin(); // MINIAOD
 						 iTrack1ID != nonMuonPionTrack.end(); ++iTrack1ID){
 		edm::View<pat::PackedCandidate>::const_iterator iTrack1 = *(iTrack1ID);
-        if (iTrack1ID.isNull()){
-            continue;
-        }
 		if (iTrack1->pt() < pionPTcut)
 		{
 			continue;
@@ -864,9 +861,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             // DEBUG: display current muon pair.
             // Build transient track and store.
             edm::View<pat::PackedCandidate>::const_iterator iTrack2 = *(iTrack2ID);
-            if (iTrack2ID.isNull()){
-                continue;
-            }
 			if (iTrack2->pt() < pionPTcut)
 			{
 				continue;
@@ -876,20 +870,21 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 				continue;
 			}
             TransientTrack trackTT2(*(iTrack2->bestTrack()), &(bFieldHandle)); 
-			
+
             // Charge requirement.
             if ((iTrack1->charge() + iTrack2->charge()) != 0)
 				continue;
 
-			TLorentzVector P4_Track1, P4_Track2;
+			TLorentzVector P4_Track1, P4_Track2, P4_Phi;
 			P4_Track1.SetPtEtaPhiM(iTrack1->pt(), iTrack1->eta(), iTrack1->phi(), myPiMass);
 			P4_Track2.SetPtEtaPhiM(iTrack2->pt(), iTrack2->eta(), iTrack2->phi(), myPiMass);
+			P4_Phi = P4_Track1 + P4_Track2;
 
-			if (P4_Track1.DeltaR(P4_Jpsipipi) > pionDRcut)
+			if (P4_Track1.DeltaR(P4_Phi) > pionDRcut)
 			{
 				continue;
 			}
-			if (P4_Track2.DeltaR(P4_Jpsipipi) > pionDRcut)
+			if (P4_Track2.DeltaR(P4_Phi) > pionDRcut)
 			{
 				continue;
 			}
@@ -912,7 +907,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                 continue;
             }
             // Passing all the checks, store the muon pair as pairs of RefCountedKinematicParticle.
-            if(isPhiPionPair){
+            if(isPhiTrackPair){
                 piPairCand_Phi.push_back(
                     std::make_pair(transTrackPair, transTrackPairId) );
             }
@@ -1382,8 +1377,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
     Phi_phi->clear();
     Phi_eta->clear();
     Phi_pt->clear();
-    Phi_mu_1_Idx->clear();
-    Phi_mu_2_Idx->clear();
+    Phi_pi_1_Idx->clear();
+    Phi_pi_2_Idx->clear();
 } // analyze
 // 
 

@@ -254,6 +254,7 @@ private:
     vector<string>      FiltersForUpsilon_;
     vector<std::string>* MatchJpsiTrigNames;
     int JpsiMatchTrig[50], UpsilonMatchTrig[50];
+    vector<int> *muJpsiFilterRes;
 
 
     virtual void getAllTriggers(   const edm::Handle<edm::TriggerResults>&     HLTresult);
