@@ -111,6 +111,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_set>
+#include <regex>
 
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 
@@ -183,7 +184,7 @@ MultiLepPAT::MultiLepPAT(const edm::ParameterSet &iConfig)
 	  muFirstBarrel(0), muFirstEndCap(0), muDzVtx(0), muDxyVtx(0),
 	  muNDF(0), muGlNDF(0), muPhits(0), muShits(0), muGlMuHits(0), muType(0), muQual(0),
 	  muTrack(0), muCharge(0), muIsoratio(0), muIsGoodLooseMuon(0), muIsGoodLooseMuonNew(0),
-	  muIsGoodSoftMuonNewIlse(0), muIsGoodSoftMuonNewIlseMod(0), muIsGoodTightMuon(0), muIsJpsiTrigMatch(0), muIsUpsTrigMatch(0), munMatchedSeg(0),
+	  muIsGoodSoftMuonNewIlse(0), muIsGoodSoftMuonNewIlseMod(0), muIsGoodTightMuon(0), muIsJpsiTrigMatch(0), muIsUpsTrigMatch(0), munMatchedSeg(0), muJpsiFilterRes(0),
 
 	  muIsPatLooseMuon(0), muIsPatTightMuon(0), muIsPatSoftMuon(0), muIsPatMediumMuon(0),
 	  muUpsVrtxMatch(0), muL3TriggerMatch(0),
@@ -424,7 +425,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			trigRes->push_back(hltflag);
 			trigNames->push_back(trigName);
 
-			for (unsigned int JpsiTrig = 0; JpsiTrig < nJpsitrigger; JpsiTrig++)
+			for (int JpsiTrig = 0; JpsiTrig < nJpsitrigger; JpsiTrig++)
 			{
 				std::regex pattern(".*"+TriggersForJpsi_[JpsiTrig]+".*");
 				if (std::regex_search(trigName, pattern))
@@ -649,7 +650,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			bool isJpsiTrigMatch = false;
 			bool isJpsiFilterMatch = false;
 
-			for (unsigned int JpsiTrig = 0; JpsiTrig < nJpsitrigger; JpsiTrig++)
+			for (int JpsiTrig = 0; JpsiTrig < nJpsitrigger; JpsiTrig++)
 			{
 				if(JpsiMatchTrig[JpsiTrig] != 0)
 				{
@@ -829,29 +830,33 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
     std::vector<uint>                        transTrackPairId;
     ParticleMass piMass = myPiMass;
     float piMassSigma   = myPiMassErr; //见.h文件
-    float chi2 = 0.;
-	float ndof = 0.;
+    chi2 = 0.;
+	ndof = 0.;
 
     // Candidates of track pairs from Phi
     using pion_t   = RefCountedKinematicParticle;
-    using piList_t = std::pair< vector<muon_t>, vector<uint> >;
+    using piList_t = std::pair< vector<pion_t>, vector<uint> >;
     std::vector< piList_t > piPairCand_Phi;
 
     // Selection for the muon candidates
     for(std::vector<edm::View<pat::PackedCandidate>::const_iterator>::const_iterator iTrack1ID = nonMuonPionTrack.begin(); // MINIAOD
 						 iTrack1ID != nonMuonPionTrack.end(); ++iTrack1ID){
 		edm::View<pat::PackedCandidate>::const_iterator iTrack1 = *(iTrack1ID);
-        if (iTrack1.isNull()){
+        if (iTrack1ID.isNull()){
             continue;
         }
-		if (iTrack1->pt() < pionptcut)
+		if (iTrack1->pt() < pionPTcut)
+		{
+			continue;
+		}
+		if (!iTrack1->hasTrackDetails() || iTrack1->charge() == 0)
 		{
 			continue;
 		}
         // Build transient track and store.
         TransientTrack trackTT1(*(iTrack1->bestTrack()), &(bFieldHandle));
-        transPionPair.push_back(PhiFactory.particle(trackTT1, piMass, chi2, ndof, piMassSigma));
-        transMuPairId.push_back(iTrack1ID - nonMuonPionTrack.begin());
+        transTrackPair.push_back(PhiFactory.particle(trackTT1, piMass, chi2, ndof, piMassSigma));
+        transTrackPairId.push_back(iTrack1ID - nonMuonPionTrack.begin());
 
         // Next muon candidate.
         for(std::vector<edm::View<pat::PackedCandidate>::const_iterator>::const_iterator iTrack2ID = iTrack1ID + 1; // MINIAOD
@@ -859,17 +864,10 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             // DEBUG: display current muon pair.
             // Build transient track and store.
             edm::View<pat::PackedCandidate>::const_iterator iTrack2 = *(iTrack2ID);
-            if (iTrack2.isNull()){
+            if (iTrack2ID.isNull()){
                 continue;
             }
-			if (iTrack2->pt() < pionptcut)
-			{
-				continue;
-			}
-            TransientTrack trackTT2(*(iTrack2->bestTrack()), &(bFieldHandle)); 
-            // Charge requirement.
-
-			if (!iTrack1->hasTrackDetails() || iTrack1->charge() == 0)
+			if (iTrack2->pt() < pionPTcut)
 			{
 				continue;
 			}
@@ -877,31 +875,33 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			{
 				continue;
 			}
+            TransientTrack trackTT2(*(iTrack2->bestTrack()), &(bFieldHandle)); 
+			
+            // Charge requirement.
             if ((iTrack1->charge() + iTrack2->charge()) != 0)
 				continue;
 
 			TLorentzVector P4_Track1, P4_Track2;
-			P4_Track1.SetPtEtaPhiM(iTrack1->pt(), iTrack1->eta(), iTrack1->phi(), myPimass);
-			P4_Track2.SetPtEtaPhiM(iTrack2->pt(), iTrack2->eta(), iTrack2->phi(), myPimass);
+			P4_Track1.SetPtEtaPhiM(iTrack1->pt(), iTrack1->eta(), iTrack1->phi(), myPiMass);
+			P4_Track2.SetPtEtaPhiM(iTrack2->pt(), iTrack2->eta(), iTrack2->phi(), myPiMass);
 
-			// if (P4_Track1.DeltaR(P4_Jpsipipi) > pionDRcut)
-			// {
-			// 	continue;
-			// }
-			// if (P4_Track2.DeltaR(P4_Jpsipipi) > pionDRcut)
-			// {
-			// 	continue;
-			// }
-			// 这个deltaR应该加进去吗？组会上讨论讨论
+			if (P4_Track1.DeltaR(P4_Jpsipipi) > pionDRcut)
+			{
+				continue;
+			}
+			if (P4_Track2.DeltaR(P4_Jpsipipi) > pionDRcut)
+			{
+				continue;
+			}
 
             // Dynamics selection. A very crude selection.
             // Involves more calculation and is therefore done after kinematics.
-            isPhiPionPair = (0 < (iTrack1->p4() + iTrack2->p4()).mass()
+            isPhiTrackPair = (0 < (iTrack1->p4() + iTrack2->p4()).mass()
                               && (iTrack1->p4() + iTrack2->p4()).mass() < 2); // 要不要加，加多少？
 
             // isJpsiMuPair = true;
             // isUpsMuPair  = true;
-            if((!isPhiPionPair)){
+            if((!isPhiTrackPair)){
                 continue;
             }
             transTrackPair.push_back(PhiFactory.particle(trackTT2,  muMass, 
@@ -1131,7 +1131,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                     Jpsi_2_eta->push_back(-9);
                     Jpsi_2_pt->push_back(-9);
                 }
-                if(isValidUps){
+                if(isValidPhi){
                     getDynamics(Phi_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
                     Phi_mass->push_back(    Phi_Fit_noMC->currentState().mass());
                     Phi_massDiff->push_back(Phi_Fit_noMC->currentState().mass() - myPhiMass);
