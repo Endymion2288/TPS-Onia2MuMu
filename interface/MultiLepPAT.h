@@ -254,7 +254,6 @@ private:
     vector<string>      FiltersForUpsilon_;
     vector<std::string>* MatchJpsiTrigNames;
     int JpsiMatchTrig[50], UpsilonMatchTrig[50];
-    vector<int> *muJpsiFilterRes;
 
 
     virtual void getAllTriggers(   const edm::Handle<edm::TriggerResults>&     HLTresult);
@@ -314,7 +313,8 @@ private:
     vector<int>         *muIsGoodLooseMuon,         *muIsGoodLooseMuonNew, 
                         *muIsGoodSoftMuonNewIlse,   *muIsGoodSoftMuonNewIlseMod, 
                         *muIsGoodTightMuon,         *muIsJpsiTrigMatch,         
-                        *muIsUpsTrigMatch,          *munMatchedSeg;
+                        *muIsUpsTrigMatch,          *munMatchedSeg,
+                        *muJpsiFilterRes;
     vector<int>         *muIsPatLooseMuon, *muIsPatTightMuon, *muIsPatSoftMuon, *muIsPatMediumMuon;
     
     //for Maksat trigger match [Annotation by Eric Wang, 20240626]
