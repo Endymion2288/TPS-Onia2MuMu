@@ -679,6 +679,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 		}
 	} // if two muons
 
+	std::cout << "Finish the part of trigger match."  << endl;
+
 	if (doMC)
 	{
 		// pion loop
@@ -817,6 +819,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
         transMuPairId.pop_back();
     }
 
+	std::cout << "Finish the part of muon pair."  << endl;
+
 	
     // 看上去需要仿照wc的方式写phi的程序了
 	bool isPhiTrackPair = false;
@@ -920,6 +924,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 		transTrackPairId.pop_back();
     }
 
+	std::cout << "Finish the part of track pair."  << endl;
+
     /**************************************************************************
      * [Section]
      *      Jpsi and Upsilon reconstruction and fitting.
@@ -987,6 +993,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                 Phi_pi_1_Idx->push_back(piPair_Phi->second[0]);
                 Phi_pi_2_Idx->push_back(piPair_Phi->second[1]);
                 // Check if all fit trees give non-null results.
+				std::cout << "Finish the three partical fitting separately." << std::endl;
+
                 if(isValidJpsi_1 && isValidJpsi_2 && isValidPhi){
                     // Extract the vertex and the particle parameters from valid results.
                     // Here, when an invalid fit is detected, the massErr is set to -9.
@@ -1165,6 +1173,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 	{
 		X_One_Tree_->Fill();
 	}
+
+	std::cout << "Finish the part of fitting."  << endl;
 
 	if (Debug_)
 	{
