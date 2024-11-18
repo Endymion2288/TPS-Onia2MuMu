@@ -648,7 +648,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             // TO_ENC [Tagged by Eric Wang, 20240704]
 
 			bool isJpsiTrigMatch = false;
-			bool isJpsiFilterMatch = false;
+			// bool isJpsiFilterMatch = false;
 
 			for (int JpsiTrig = 0; JpsiTrig < nJpsitrigger; JpsiTrig++)
 			{
@@ -658,23 +658,23 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 					break;
 				}
 			}
-			for(unsigned int JpsiTrig = 0; JpsiTrig < FiltersForJpsi_.size();JpsiTrig++)
-			{
-				if (isJpsiTrigMatch && hltresults.isValid())
-				{
-					pat::TriggerObjectStandAlone *tempTriggerObject = nullptr; // 指针初始化
-					for (auto i = iMuonP->triggerObjectMatches().begin(); i != iMuonP->triggerObjectMatches().end(); ++i)
-					{
-						tempTriggerObject = new pat::TriggerObjectStandAlone(*i);
-						tempTriggerObject->unpackFilterLabels(iEvent, *hltresults);
-						if(tempTriggerObject->hasFilterLabel(FiltersForJpsi_[JpsiTrig]))
-						{
-							isJpsiFilterMatch = true;
-						}
-						delete tempTriggerObject;
-					}
-				}
-			}
+			// for(unsigned int JpsiTrig = 0; JpsiTrig < FiltersForJpsi_.size();JpsiTrig++)
+			// {
+			// 	if (isJpsiTrigMatch && hltresults.isValid())
+			// 	{
+			// 		pat::TriggerObjectStandAlone *tempTriggerObject = nullptr; // 指针初始化
+			// 		for (auto i = iMuonP->triggerObjectMatches().begin(); i != iMuonP->triggerObjectMatches().end(); ++i)
+			// 		{
+			// 			tempTriggerObject = new pat::TriggerObjectStandAlone(*i);
+			// 			tempTriggerObject->unpackFilterLabels(iEvent, *hltresults);
+			// 			if(tempTriggerObject->hasFilterLabel(FiltersForJpsi_[JpsiTrig]))
+			// 			{
+			// 				isJpsiFilterMatch = true;
+			// 			}
+			// 			delete tempTriggerObject;
+			// 		}
+			// 	}
+			// }
 			muJpsiFilterRes->push_back(isJpsiTrigMatch);
 		}
 	} // if two muons
