@@ -601,16 +601,25 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			                                      iMuonP != thePATMuonHandle->end(); ++iMuonP)
 		{
 			// push back all muon information
+			std::cout << "1" << std::endl;
 			++nMu;
 			muIsPatLooseMuon->push_back(iMuonP->isLooseMuon());
+			std::cout << "2" << std::endl;
 			muIsPatTightMuon->push_back(iMuonP->isTightMuon(thePrimaryV));
+			std::cout << "3" << std::endl;
 			muIsPatSoftMuon->push_back(iMuonP->isSoftMuon(thePrimaryV));
+			std::cout << "4" << std::endl;
 			muIsPatMediumMuon->push_back(iMuonP->isMediumMuon());
+			std::cout << "5" << std::endl;
 
 			muPx->push_back(iMuonP->px());
+			std::cout << "6" << std::endl;
 			muPy->push_back(iMuonP->py());
+			std::cout << "7" << std::endl;
 			muPz->push_back(iMuonP->pz());
+			std::cout << "8" << std::endl;
 			muCharge->push_back(iMuonP->charge());
+			std::cout << "9" << std::endl;
 			// 没有引入d0和TrackIso等信息
 
 			int goodSoftMuonNewIlseMod = 0;
@@ -682,6 +691,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			std::cout << "Finish the part of one muon trigger match." << std::endl;
 
 			muJpsiFilterRes->push_back(isJpsiTrigMatch);
+			std::cout << "0" << std::endl;
 		}
 	} // if two muons
 
