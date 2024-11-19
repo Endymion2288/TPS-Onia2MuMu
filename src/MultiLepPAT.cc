@@ -690,7 +690,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			// }
 			std::cout << "Finish the part of one muon trigger match." << std::endl;
 
-			muJpsiFilterRes->push_back(isJpsiTrigMatch);
+			muJpsiFilterRes->push_back(isJpsiTrigMatch); // 这一步内存溢出了？？？
 			std::cout << "0" << std::endl;
 		}
 	} // if two muons
@@ -1866,6 +1866,7 @@ void MultiLepPAT::beginJob()
 	X_One_Tree_->Branch("muIsGoodLooseMuonNew", &muIsGoodLooseMuonNew);
 	X_One_Tree_->Branch("muIsGoodLooseMuon", &muIsGoodLooseMuon);
 	X_One_Tree_->Branch("muIsGoodTightMuon", &muIsGoodTightMuon);
+	X_One_Tree_->Branch("muJpsiFilterRes", &muJpsiFilterRes);
 
 	X_One_Tree_->Branch("muIsPatLooseMuon", &muIsPatLooseMuon);
 	X_One_Tree_->Branch("muIsPatTightMuon", &muIsPatTightMuon);
