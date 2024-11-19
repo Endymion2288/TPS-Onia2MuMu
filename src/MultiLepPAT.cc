@@ -594,32 +594,22 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 		vector<double> inputValues;
 		inputValues.resize(10, 0.);
 
-		std::cout << "Start the part of trigger match."  << endl;
 		// fill muon track block
         // TO_IMPR_CPP11 (for(auto ...)) [Tagged by Eric Wang, 20240704]
 		for (edm::View<pat::Muon>::const_iterator iMuonP =  thePATMuonHandle->begin(); //  MINIAOD
 			                                      iMuonP != thePATMuonHandle->end(); ++iMuonP)
 		{
 			// push back all muon information
-			std::cout << "1" << std::endl;
 			++nMu;
 			muIsPatLooseMuon->push_back(iMuonP->isLooseMuon());
-			std::cout << "2" << std::endl;
 			muIsPatTightMuon->push_back(iMuonP->isTightMuon(thePrimaryV));
-			std::cout << "3" << std::endl;
 			muIsPatSoftMuon->push_back(iMuonP->isSoftMuon(thePrimaryV));
-			std::cout << "4" << std::endl;
 			muIsPatMediumMuon->push_back(iMuonP->isMediumMuon());
-			std::cout << "5" << std::endl;
 
 			muPx->push_back(iMuonP->px());
-			std::cout << "6" << std::endl;
 			muPy->push_back(iMuonP->py());
-			std::cout << "7" << std::endl;
 			muPz->push_back(iMuonP->pz());
-			std::cout << "8" << std::endl;
 			muCharge->push_back(iMuonP->charge());
-			std::cout << "9" << std::endl;
 			// 没有引入d0和TrackIso等信息
 
 			int goodSoftMuonNewIlseMod = 0;
@@ -627,8 +617,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			int goodLooseMuonNew = 0;
 			int goodLooseMuon = 0;
 			int goodTightMuon = 0;
-
-			std::cout << "Complete muon initialization." << std::endl;
 			
 			
 			// Find and delete muon Tracks in PionTracks
@@ -654,7 +642,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 					iTrackfID = iTrackfID - 1;
 				}
 			}
-			std::cout << "Finish the part of track erasing." << std::endl;
 			// float mymuMVABs = -1;
 
             // Check if match any HLT for Jpsi and Upsilon [Annotated by Eric Wang, 20240704]
@@ -688,7 +675,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			// 		}
 			// 	}
 			// }
-			std::cout << "Finish the part of one muon trigger match." << std::endl;
 
 			muJpsiFilterRes->push_back(isJpsiTrigMatch); // 这一步内存溢出了？？？
 			std::cout << "0" << std::endl;
@@ -858,6 +844,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
     using piList_t = std::pair< vector<pion_t>, vector<uint> >;
     std::vector< piList_t > piPairCand_Phi;
 
+	std::cout << "Start the part of track pair."  << endl;
+
     // Selection for the muon candidates
     for(std::vector<edm::View<pat::PackedCandidate>::const_iterator>::const_iterator iTrack1ID = nonMuonPionTrack.begin(); // MINIAOD
 						 iTrack1ID != nonMuonPionTrack.end(); ++iTrack1ID){
@@ -874,6 +862,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
         TransientTrack trackTT1(*(iTrack1->bestTrack()), &(bFieldHandle));
         transTrackPair.push_back(PhiFactory.particle(trackTT1, piMass, chi2, ndof, piMassSigma));
         transTrackPairId.push_back(iTrack1ID - nonMuonPionTrack.begin());
+		std::cout << "1" << std::endl;
 
         // Next muon candidate.
         for(std::vector<edm::View<pat::PackedCandidate>::const_iterator>::const_iterator iTrack2ID = iTrack1ID + 1; // MINIAOD
@@ -890,6 +879,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 				continue;
 			}
             TransientTrack trackTT2(*(iTrack2->bestTrack()), &(bFieldHandle)); 
+			std::cout << "2" << std::endl;
 
             // Charge requirement.
             if ((iTrack1->charge() + iTrack2->charge()) != 0)
@@ -899,6 +889,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			P4_Track1.SetPtEtaPhiM(iTrack1->pt(), iTrack1->eta(), iTrack1->phi(), myPiMass);
 			P4_Track2.SetPtEtaPhiM(iTrack2->pt(), iTrack2->eta(), iTrack2->phi(), myPiMass);
 			P4_Phi = P4_Track1 + P4_Track2;
+			std::cout << "3" << std::endl;
 
 			if (P4_Track1.DeltaR(P4_Phi) > pionDRcut)
 			{
@@ -919,6 +910,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             if((!isPhiTrackPair)){
                 continue;
             }
+			std::cout << "4" << std::endl;
             transTrackPair.push_back(PhiFactory.particle(trackTT2,  muMass, 
                                                            chi2, ndof, muMassSigma) );
             transTrackPairId.push_back(iTrack2ID - nonMuonPionTrack.begin());
@@ -926,11 +918,13 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             if(!particlesToVtx(transTrackPair)){
                 continue;
             }
+			std::cout << "5" << std::endl;
             // Passing all the checks, store the muon pair as pairs of RefCountedKinematicParticle.
             if(isPhiTrackPair){
                 piPairCand_Phi.push_back(
                     std::make_pair(transTrackPair, transTrackPairId) );
             }
+			std::cout << "6" << std::endl;
             // Clear the transient muon pair for the next pair.
             transTrackPair.pop_back();
             transTrackPairId.pop_back();
