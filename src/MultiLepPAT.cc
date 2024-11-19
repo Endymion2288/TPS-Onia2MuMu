@@ -911,8 +911,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 
             // Dynamics selection. A very crude selection.
             // Involves more calculation and is therefore done after kinematics.
-            isPhiTrackPair = (0 < (iTrack1->p4() + iTrack2->p4()).mass()
-                              && (iTrack1->p4() + iTrack2->p4()).mass() < 2); // 要不要加，加多少？
+            isPhiTrackPair = (0.9 < (iTrack1->p4() + iTrack2->p4()).mass()
+                              && (iTrack1->p4() + iTrack2->p4()).mass() < 1.1); // 要不要加，加多少？
 
             // isJpsiMuPair = true;
             // isUpsMuPair  = true;
