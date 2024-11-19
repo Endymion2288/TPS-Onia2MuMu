@@ -594,6 +594,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 		vector<double> inputValues;
 		inputValues.resize(10, 0.);
 
+		std::cout << "Start the part of trigger match."  << endl;
 		// fill muon track block
         // TO_IMPR_CPP11 (for(auto ...)) [Tagged by Eric Wang, 20240704]
 		for (edm::View<pat::Muon>::const_iterator iMuonP =  thePATMuonHandle->begin(); //  MINIAOD
@@ -617,6 +618,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			int goodLooseMuonNew = 0;
 			int goodLooseMuon = 0;
 			int goodTightMuon = 0;
+
+			std::cout << "Complete muon initialization." << std::endl;
 			
 			
 			// Find and delete muon Tracks in PionTracks
@@ -642,6 +645,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 					iTrackfID = iTrackfID - 1;
 				}
 			}
+			std::cout << "Finish the part of track erasing." << std::endl;
 			// float mymuMVABs = -1;
 
             // Check if match any HLT for Jpsi and Upsilon [Annotated by Eric Wang, 20240704]
@@ -675,11 +679,13 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			// 		}
 			// 	}
 			// }
+			std::cout << "Finish the part of one muon trigger match." << std::endl;
+
 			muJpsiFilterRes->push_back(isJpsiTrigMatch);
 		}
 	} // if two muons
 
-	std::cout << "Finish the part of trigger match."  << endl;
+	std::cout << "Finish the part of all muons' trigger match."  << endl;
 
 	if (doMC)
 	{
