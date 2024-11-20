@@ -904,6 +904,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             // Involves more calculation and is therefore done after kinematics.
             isPhiTrackPair = (0.8 < (iTrack1->p4() + iTrack2->p4()).mass()
                               && (iTrack1->p4() + iTrack2->p4()).mass() < 1.2); // 要不要加，加多少？
+			std::cout << "iTrack1 pt: " << iTrack1->pt() << " iTrack2 pt: " << iTrack2->pt() << std::endl;
+			std::cout << "mass:" << (iTrack1->p4() + iTrack2->p4()).mass() << std::endl;
 
             // isJpsiMuPair = true;
             // isUpsMuPair  = true;
@@ -1019,16 +1021,14 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                         interOnia.push_back(Jpsi_2_Fit_noMC);
                         interOnia.push_back(Phi_Fit_noMC);
                         // Fit the quarkonia to the same vertex
-						std::cout << "Found candidate first" << std::endl;
-                        std::cout << "Jpsi_1: " << Jpsi_1_Fit_noMC->currentState().mass() << std::endl;
-                        std::cout << "Jpsi_2: " << Jpsi_2_Fit_noMC->currentState().mass() << std::endl;
-                        std::cout << "Phi: " << Phi_Fit_noMC->currentState().mass() << std::endl;
                         isValidPri = particlesToVtx(vtxFitTree_Pri, interOnia, "primary vertex");
 			            interOnia.clear();
-                        std::cout << "Found candidate second" << std::endl;
+                        std::cout << "Found candidate" << std::endl;
                         std::cout << "Jpsi_1: " << Jpsi_1_Fit_noMC->currentState().mass() << std::endl;
                         std::cout << "Jpsi_2: " << Jpsi_2_Fit_noMC->currentState().mass() << std::endl;
                         std::cout << "Phi: " << Phi_Fit_noMC->currentState().mass() << std::endl;
+						std::cout << "Phi daughter 1: " << Phi_Fit_noMC->movePointerToTheFirstChild()->currentParticle().pt() << std::endl;
+						std::cout << "Phi daughter 2: " << Phi_Fit_noMC->movePointerToTheNextChild()->currentParticle().pt() << std::endl;
                     }
                 }
                 // Work with all fit results above. (Jpsi_1, Jpsi_2, Ups, Pri)

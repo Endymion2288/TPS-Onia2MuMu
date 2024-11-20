@@ -273,9 +273,9 @@ private:
 	static constexpr double myPhiMass  = 1.019455, myPhiMassErr    = 0.000020;
 	static constexpr double myMuMass = 0.1056583745;
 	static constexpr double myMuMassErr = 0.0000000023; // From PDG 2024
-	static constexpr double myPiMass = 0.13957039;
+	static constexpr double myPiMass = 0.493677; // Kaon mass and error
 	// try
-	static constexpr double myPiMassErr = 0.00000018; // From PDG 2024
+	static constexpr double myPiMassErr = 0.000015; // From PDG 2024
 
     // Constructing TTree object [Annotation by Eric Wang, 20240626]
     
