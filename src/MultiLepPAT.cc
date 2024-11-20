@@ -901,8 +901,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             // Involves more calculation and is therefore done after kinematics.
             isPhiTrackPair = (0.8 < (iTrack1->p4() + iTrack2->p4()).mass()
                               && (iTrack1->p4() + iTrack2->p4()).mass() < 1.2); // 要不要加，加多少？
-			std::cout << "iTrack1 pt: " << iTrack1->pt() << " iTrack2 pt: " << iTrack2->pt() << std::endl;
-			std::cout << "mass:" << (iTrack1->p4() + iTrack2->p4()).mass() << std::endl;
 
             // isJpsiMuPair = true;
             // isUpsMuPair  = true;
@@ -982,6 +980,14 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             // 这里加入track的循环
 			for(auto piPair_Phi  = piPairCand_Phi.begin(); 
                      piPair_Phi != piPairCand_Phi.end(); piPair_Phi++){
+				std::cout << "First Kaon Mass: " << piPair_Phi->first[0]->currentState().mass() << std::endl;
+				std::cout << "Second Kaon Mass: " << piPair_Phi->first[1]->currentState().mass() << std::endl;
+				std::cout << "First Kaon px: " << piPair_Phi->first[0]->currentState().kinematicParameters().momentum().x() << std::endl;
+				std::cout << "First Kaon py: " << piPair_Phi->first[0]->currentState().kinematicParameters().momentum().y() << std::endl;
+				std::cout << "First Kaon pz: " << piPair_Phi->first[0]->currentState().kinematicParameters().momentum().z() << std::endl;
+				std::cout << "Second Kaon px: " << piPair_Phi->first[1]->currentState().kinematicParameters().momentum().x() << std::endl;
+				std::cout << "Second Kaon py: " << piPair_Phi->first[1]->currentState().kinematicParameters().momentum().y() << std::endl;
+				std::cout << "Second Kaon pz: " << piPair_Phi->first[1]->currentState().kinematicParameters().momentum().z() << std::endl;
 
                 // Initialize the marker for primary vertex
                 isValidPri = false;
