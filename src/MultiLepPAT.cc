@@ -862,7 +862,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
         TransientTrack trackTT1(*(iTrack1->bestTrack()), &(bFieldHandle));
         transTrackPair.push_back(PhiFactory.particle(trackTT1, piMass, chi2, ndof, piMassSigma));
         transTrackPairId.push_back(iTrack1ID - nonMuonPionTrack.begin());
-		std::cout << "1" << std::endl;
 
         // Next muon candidate.
         for(std::vector<edm::View<pat::PackedCandidate>::const_iterator>::const_iterator iTrack2ID = iTrack1ID + 1; // MINIAOD
@@ -879,7 +878,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 				continue;
 			}
             TransientTrack trackTT2(*(iTrack2->bestTrack()), &(bFieldHandle)); 
-			std::cout << "2" << std::endl;
 
             // Charge requirement.
             if ((iTrack1->charge() + iTrack2->charge()) != 0)
@@ -889,7 +887,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			P4_Track1.SetPtEtaPhiM(iTrack1->pt(), iTrack1->eta(), iTrack1->phi(), myPiMass);
 			P4_Track2.SetPtEtaPhiM(iTrack2->pt(), iTrack2->eta(), iTrack2->phi(), myPiMass);
 			P4_Phi = P4_Track1 + P4_Track2;
-			std::cout << "3" << std::endl;
 
 			if (P4_Track1.DeltaR(P4_Phi) > pionDRcut)
 			{
@@ -912,7 +909,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             if((!isPhiTrackPair)){
                 continue;
             }
-			std::cout << "4" << std::endl;
             transTrackPair.push_back(PhiFactory.particle(trackTT2,  piMass, 
                                                            chi2, ndof, piMassSigma) ); //此处之前错为muMass
             transTrackPairId.push_back(iTrack2ID - nonMuonPionTrack.begin());
@@ -920,13 +916,11 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             if(!particlesToVtx(transTrackPair)){
                 continue;
             }
-			std::cout << "5" << std::endl;
             // Passing all the checks, store the muon pair as pairs of RefCountedKinematicParticle.
             if(isPhiTrackPair){
                 piPairCand_Phi.push_back(
                     std::make_pair(transTrackPair, transTrackPairId) );
             }
-			std::cout << "6" << std::endl;
             // Clear the transient muon pair for the next pair.
             transTrackPair.pop_back();
             transTrackPairId.pop_back();
@@ -1027,9 +1021,26 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                         std::cout << "Jpsi_1: " << Jpsi_1_Fit_noMC->currentState().mass() << std::endl;
                         std::cout << "Jpsi_2: " << Jpsi_2_Fit_noMC->currentState().mass() << std::endl;
                         std::cout << "Phi: " << Phi_Fit_noMC->currentState().mass() << std::endl;
-						vtxFitTree_Phi->movePointerToTheTop();
-						std::cout << "Phi daughter 1: " << vtxFitTree_Phi->movePointerToTheFirstChild().currentParticle()->currentState().pt() << std::endl;
-						std::cout << "Phi daughter 2: " << vtxFitTree_Phi->movePointerToTheNextChild().currentParticle()->currentState().pt() << std::endl;
+						vtxFitTree_Phi->movePointerToTheFirstChild();
+						RefCountedKinematicParticle fitKaon1 = vtxFitTree_Phi->currentParticle();
+						double Kaon1M_fit_mix = fitKaon1->currentState().mass();
+						double Kaon1Px_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().x();
+						double Kaon1Py_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().y();
+						double Kaon1Pz_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().z();
+						std::cout << "Kaon1 mass: " << Kaon1M_fit_mix << std::endl;
+						std::cout << "Kaon1 px: " << Kaon1Px_fit_mix << std::endl;
+						std::cout << "Kaon1 py: " << Kaon1Py_fit_mix << std::endl;
+						std::cout << "Kaon1 pz: " << Kaon1Pz_fit_mix << std::endl;
+						vtxFitTree_Phi->movePointerToTheNextChild();
+						RefCountedKinematicParticle fitKaon2 = vtxFitTree_Phi->currentParticle();
+						double Kaon2M_fit_mix = fitKaon2->currentState().mass();
+						double Kaon2Px_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().x();
+						double Kaon2Py_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().y();
+						double Kaon2Pz_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().z();
+						std::cout << "Kaon2 mass: " << Kaon2M_fit_mix << std::endl;
+						std::cout << "Kaon2 px: " << Kaon2Px_fit_mix << std::endl;
+						std::cout << "Kaon2 py: " << Kaon2Py_fit_mix << std::endl;
+						std::cout << "Kaon2 pz: " << Kaon2Pz_fit_mix << std::endl;
                     }
                 }
                 // Work with all fit results above. (Jpsi_1, Jpsi_2, Ups, Pri)
