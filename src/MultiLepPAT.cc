@@ -911,8 +911,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                 continue;
             }
 			std::cout << "4" << std::endl;
-            transTrackPair.push_back(PhiFactory.particle(trackTT2,  muMass, 
-                                                           chi2, ndof, muMassSigma) );
+            transTrackPair.push_back(PhiFactory.particle(trackTT2,  piMass, 
+                                                           chi2, ndof, piMassSigma) );
             transTrackPairId.push_back(iTrack2ID - nonMuonPionTrack.begin());
             // Judging with vertex fitting.
             if(!particlesToVtx(transTrackPair)){
