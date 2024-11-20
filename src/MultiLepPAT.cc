@@ -912,7 +912,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             }
 			std::cout << "4" << std::endl;
             transTrackPair.push_back(PhiFactory.particle(trackTT2,  piMass, 
-                                                           chi2, ndof, piMassSigma) );
+                                                           chi2, ndof, piMassSigma) ); //此处之前错为muMass
             transTrackPairId.push_back(iTrack2ID - nonMuonPionTrack.begin());
             // Judging with vertex fitting.
             if(!particlesToVtx(transTrackPair)){
@@ -1019,9 +1019,13 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                         interOnia.push_back(Jpsi_2_Fit_noMC);
                         interOnia.push_back(Phi_Fit_noMC);
                         // Fit the quarkonia to the same vertex
+						std::cout << "Found candidate first" << std::endl;
+                        std::cout << "Jpsi_1: " << Jpsi_1_Fit_noMC->currentState().mass() << std::endl;
+                        std::cout << "Jpsi_2: " << Jpsi_2_Fit_noMC->currentState().mass() << std::endl;
+                        std::cout << "Phi: " << Phi_Fit_noMC->currentState().mass() << std::endl;
                         isValidPri = particlesToVtx(vtxFitTree_Pri, interOnia, "primary vertex");
 			            interOnia.clear();
-                        std::cout << "Found candidate" << std::endl;
+                        std::cout << "Found candidate second" << std::endl;
                         std::cout << "Jpsi_1: " << Jpsi_1_Fit_noMC->currentState().mass() << std::endl;
                         std::cout << "Jpsi_2: " << Jpsi_2_Fit_noMC->currentState().mass() << std::endl;
                         std::cout << "Phi: " << Phi_Fit_noMC->currentState().mass() << std::endl;
