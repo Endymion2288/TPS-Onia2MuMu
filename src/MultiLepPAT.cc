@@ -1028,8 +1028,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                         std::cout << "Jpsi_2: " << Jpsi_2_Fit_noMC->currentState().mass() << std::endl;
                         std::cout << "Phi: " << Phi_Fit_noMC->currentState().mass() << std::endl;
 						vtxFitTree_Phi->movePointerToTheTop();
-						std::cout << "Phi daughter 1: " << vtxFitTree_Phi->movePointerToTheFirstChild()->currentParticle()->currentState().pt() << std::endl;
-						std::cout << "Phi daughter 2: " << vtxFitTree_Phi->movePointerToTheNextChild()->currentParticle()->currentState().pt() << std::endl;
+						std::cout << "Phi daughter 1: " << vtxFitTree_Phi->movePointerToTheFirstChild().currentParticle()->currentState().pt() << std::endl;
+						std::cout << "Phi daughter 2: " << vtxFitTree_Phi->movePointerToTheNextChild().currentParticle()->currentState().pt() << std::endl;
                     }
                 }
                 // Work with all fit results above. (Jpsi_1, Jpsi_2, Ups, Pri)
