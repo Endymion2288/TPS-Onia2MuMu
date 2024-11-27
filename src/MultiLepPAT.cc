@@ -569,11 +569,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 
     // Visualize number of muons
     std::cout << "Number of muons: " << thePATMuonHandle->size();
-    for (unsigned int i = 0; i <= thePATMuonHandle->size(); i++)
-    {
-        std::cout << "   [++++]   " << std::endl;
-    }
-    std::cout << std::endl;
 	// 以上非必要
 
 	if (thePATMuonHandle->size() >= 4) // Require at least 6 muons present [Annotated by Eric Wang, 20240704]
@@ -1641,7 +1636,9 @@ bool MultiLepPAT::particlesToVtx(const vector<RefCountedKinematicParticle>&  arg
     }catch(...){
         fitError = true;
     }
-    if (fitError || !vertexFitTree->isValid()){
+	RefCountedKinematicVertex vFit_vertex_noMC = VertexFitTree->currentDecayVertex();
+	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+    if (fitError || !vertexFitTree->isValid() || vtxprob < 0.01){
         return false;
     }
     return true;
@@ -1676,7 +1673,9 @@ bool MultiLepPAT::particlesToVtx(const vector<RefCountedKinematicParticle>&  arg
         fitError = true;
         std::cout << "[Fit Error] " << arg_Message <<  std::endl;
     }
-    if (fitError || !vertexFitTree->isValid()){
+    RefCountedKinematicVertex vFit_vertex_noMC = VertexFitTree->currentDecayVertex();
+	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+    if (fitError || !vertexFitTree->isValid() || vtxprob < 0.01){
         return false;
     }
     return true;
@@ -1714,7 +1713,9 @@ bool MultiLepPAT::particlesToVtx(RefCountedKinematicTree&                    arg
         fitError = true;
         std::cout << "[Fit Error] " << arg_Message <<  std::endl;
     }
-    if (fitError || !arg_VertexFitTree->isValid()){
+    RefCountedKinematicVertex vFit_vertex_noMC = VertexFitTree->currentDecayVertex();
+	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+    if (fitError || !vertexFitTree->isValid() || vtxprob < 0.01){
         return false;
     }
     return true;
