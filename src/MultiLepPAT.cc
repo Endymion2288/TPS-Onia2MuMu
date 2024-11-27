@@ -1636,9 +1636,12 @@ bool MultiLepPAT::particlesToVtx(const vector<RefCountedKinematicParticle>&  arg
     }catch(...){
         fitError = true;
     }
+	if (fitError || !vertexFitTree->isValid()){
+        return false;
+    }
 	RefCountedKinematicVertex vFit_vertex_noMC = vertexFitTree->currentDecayVertex();
 	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
-    if (fitError || !vertexFitTree->isValid() || vtxprob < 0.01){
+    if (vtxprob < 0.01){
         return false;
     }
     return true;
@@ -1673,9 +1676,12 @@ bool MultiLepPAT::particlesToVtx(const vector<RefCountedKinematicParticle>&  arg
         fitError = true;
         std::cout << "[Fit Error] " << arg_Message <<  std::endl;
     }
+	if (fitError || !vertexFitTree->isValid()){
+        return false;
+    }
     RefCountedKinematicVertex vFit_vertex_noMC = vertexFitTree->currentDecayVertex();
 	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
-    if (fitError || !vertexFitTree->isValid() || vtxprob < 0.01){
+    if (vtxprob < 0.01){
         return false;
     }
     return true;
@@ -1713,9 +1719,12 @@ bool MultiLepPAT::particlesToVtx(RefCountedKinematicTree&                    arg
         fitError = true;
         std::cout << "[Fit Error] " << arg_Message <<  std::endl;
     }
+	if (fitError || !arg_VertexFitTree->isValid()){
+        return false;
+    }
     RefCountedKinematicVertex vFit_vertex_noMC = arg_VertexFitTree->currentDecayVertex();
 	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
-    if (fitError || !arg_VertexFitTree->isValid() || vtxprob < 0.01){
+    if (vtxprob < 0.01){
         return false;
     }
     return true;
