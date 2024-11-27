@@ -2149,7 +2149,7 @@ double MultiLepPAT::GetcTau(RefCountedKinematicVertex&   decayVrtx,
 
     double LxyErr2 = ROOT::Math::Similarity(LxyErrMatrix, vdiff_);
     double LxyPVErr = 0;
-    double LxyPVSig = 0;
+    // double LxyPVSig = 0;
 
     double cosAlpha = vdiff.Dot(pperp) / (vdiff.Perp() * pperp.Perp());
     double LxyPV = vdiff.Dot(pperp) / pperp.Mag();
@@ -2160,7 +2160,7 @@ double MultiLepPAT::GetcTau(RefCountedKinematicVertex&   decayVrtx,
         LxyPVErr = TMath::Sqrt(LxyErr2) / Lxy * cosAlpha;
 
     if (LxyPVErr != 0)
-        LxyPVSig = LxyPV / LxyPVErr;
+        double LxyPVSig = LxyPV / LxyPVErr;
 
     //Jinfeng
     // if (MassConstraint) {
