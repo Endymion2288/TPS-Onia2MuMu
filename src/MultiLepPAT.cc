@@ -2133,15 +2133,51 @@ double MultiLepPAT::GetcTau(RefCountedKinematicVertex&   decayVrtx,
     TVector3 pvtx;
     vtx.SetXYZ((*decayVrtx).position().x(), (*decayVrtx).position().y(), 0);
     pvtx.SetXYZ(bs.position().x(), bs.position().y(), 0);
-    VertexDistanceXY vdistXY;
     TVector3 pperp(kinePart->currentState().globalMomentum().x(),
-    	           kinePart->currentState().globalMomentum().y(), 
-                   0                                              );
-
+        kinePart->currentState().globalMomentum().y(), 0);
     TVector3 vdiff = vtx - pvtx;
+
+    //Jinfeng 10.3
+    GlobalError DecayErr = (*decayVrtx).error();
+    GlobalError PrimaryErr = bs.error();
+
+    AlgebraicSymMatrix33 LxyErrMatrix = DecayErr.matrix() + PrimaryErr.matrix();
+    AlgebraicVector3 vdiff_;
+    vdiff_[0] = vdiff.x();
+    vdiff_[1] = vdiff.y();
+    vdiff_[2] = 0;
+
+    double LxyErr2 = ROOT::Math::Similarity(LxyErrMatrix, vdiff_);
+    double LxyPVErr = 0;
+    double LxyPVSig = 0;
+
     double cosAlpha = vdiff.Dot(pperp) / (vdiff.Perp() * pperp.Perp());
-    Measurement1D distXY = vdistXY.distance(Vertex(*decayVrtx), Vertex(bs));
-    double ctauPV = distXY.value() * cosAlpha * kinePart->currentState().mass() / pperp.Perp();
+    double LxyPV = vdiff.Dot(pperp) / pperp.Mag();
+    double Lxy = vdiff.Perp();
+    double ctauPV = LxyPV * kinePart->currentState().mass() / pperp.Perp();
+
+    if (Lxy != 0)
+        LxyPVErr = TMath::Sqrt(LxyErr2) / Lxy * cosAlpha;
+
+    if (LxyPVErr != 0)
+        LxyPVSig = LxyPV / LxyPVErr;
+
+    //Jinfeng
+    if (MassConstraint) {
+        temp_Lxy_MC = Lxy;
+        temp_LxyPV_MC = LxyPV;
+        temp_CosAlpha_MC = cosAlpha;
+        temp_LxyPVErr_MC = LxyPVErr;
+        temp_LxyPVSig_MC = LxyPVSig;
+    }
+    else {
+        temp_Lxy_noMC = Lxy;
+        temp_LxyPV_noMC = LxyPV;
+        temp_CosAlpha_noMC = cosAlpha;
+        temp_LxyPVErr_noMC = LxyPVErr;
+        temp_LxyPVSig_noMC = LxyPVSig;
+    }
+
     return ctauPV;    
 }
 
