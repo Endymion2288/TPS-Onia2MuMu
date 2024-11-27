@@ -1713,7 +1713,7 @@ bool MultiLepPAT::particlesToVtx(RefCountedKinematicTree&                    arg
         fitError = true;
         std::cout << "[Fit Error] " << arg_Message <<  std::endl;
     }
-    RefCountedKinematicVertex vFit_vertex_noMC = vertexFitTree->currentDecayVertex();
+    RefCountedKinematicVertex vFit_vertex_noMC = arg_VertexFitTree->currentDecayVertex();
 	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
     if (fitError || !vertexFitTree->isValid() || vtxprob < 0.01){
         return false;
