@@ -2163,20 +2163,20 @@ double MultiLepPAT::GetcTau(RefCountedKinematicVertex&   decayVrtx,
         LxyPVSig = LxyPV / LxyPVErr;
 
     //Jinfeng
-    if (MassConstraint) {
-        temp_Lxy_MC = Lxy;
-        temp_LxyPV_MC = LxyPV;
-        temp_CosAlpha_MC = cosAlpha;
-        temp_LxyPVErr_MC = LxyPVErr;
-        temp_LxyPVSig_MC = LxyPVSig;
-    }
-    else {
-        temp_Lxy_noMC = Lxy;
-        temp_LxyPV_noMC = LxyPV;
-        temp_CosAlpha_noMC = cosAlpha;
-        temp_LxyPVErr_noMC = LxyPVErr;
-        temp_LxyPVSig_noMC = LxyPVSig;
-    }
+    // if (MassConstraint) {
+    //     temp_Lxy_MC = Lxy;
+    //     temp_LxyPV_MC = LxyPV;
+    //     temp_CosAlpha_MC = cosAlpha;
+    //     temp_LxyPVErr_MC = LxyPVErr;
+    //     temp_LxyPVSig_MC = LxyPVSig;
+    // }
+    // else {
+    //     temp_Lxy_noMC = Lxy;
+    //     temp_LxyPV_noMC = LxyPV;
+    //     temp_CosAlpha_noMC = cosAlpha;
+    //     temp_LxyPVErr_noMC = LxyPVErr;
+    //     temp_LxyPVSig_noMC = LxyPVSig;
+    // }
 
     return ctauPV;    
 }
