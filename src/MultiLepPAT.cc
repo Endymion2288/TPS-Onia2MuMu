@@ -1090,10 +1090,15 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                 // Phi_pi_1_Idx->push_back(piPair_Phi->second[0]);
                 // Phi_pi_2_Idx->push_back(piPair_Phi->second[1]);
                 // Check if all fit trees give non-null results.
+				if(isValidJpsi_1){
+					extractFitRes(vtxFitTree_Jpsi_1, Jpsi_1_Fit_noMC, Jpsi_1_Vtx_noMC, tmp_Jpsi_1_massErr);
+				}
+
+				if(isValidJpsi_2){
+					extractFitRes(vtxFitTree_Jpsi_2, Jpsi_2_Fit_noMC, Jpsi_2_Vtx_noMC, tmp_Jpsi_2_massErr);
+				}
 
 				if(isValidJpsi_1 && isValidJpsi_2 ){
-					extractFitRes(vtxFitTree_Jpsi_1, Jpsi_1_Fit_noMC, Jpsi_1_Vtx_noMC, tmp_Jpsi_1_massErr);
-                    extractFitRes(vtxFitTree_Jpsi_2, Jpsi_2_Fit_noMC, Jpsi_2_Vtx_noMC, tmp_Jpsi_2_massErr);
 				
                 // if(isValidJpsi_1 && isValidJpsi_2 && isValidPhi){
                 //     // Extract the vertex and the particle parameters from valid results.
