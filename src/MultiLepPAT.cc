@@ -847,13 +847,10 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             if(isOverlapPair(*muPair_Jpsi_1, *muPair_Jpsi_2)){
                  continue;
             }
-			
-
 			// Initialize the marker for primary vertex
 			isValidPri = false;
 			// Start constructing the fit tree.
 			// Use particlesToVtx() to fit the quarkonia once more.
-			// [J-U-P] Add appropriate code for phi reconstruction from kaons.
 			isValidJpsi_1 = particlesToVtx(vtxFitTree_Jpsi_1, muPair_Jpsi_1->first, "final Jpsi_1");
 			isValidJpsi_2 = particlesToVtx(vtxFitTree_Jpsi_2, muPair_Jpsi_2->first, "final Jpsi_2");
 
@@ -863,7 +860,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 				extractFitRes(vtxFitTree_Jpsi_1, Jpsi_1_Fit_noMC, Jpsi_1_Vtx_noMC, tmp_Jpsi_1_massErr);
 				extractFitRes(vtxFitTree_Jpsi_2, Jpsi_2_Fit_noMC, Jpsi_2_Vtx_noMC, tmp_Jpsi_2_massErr);
 				// Look for "Good Fit". Judge by the massErr.
-
 				if(tmp_Jpsi_1_massErr >= 0.0 && tmp_Jpsi_2_massErr >= 0.0){
 					// Initialize the final fitting marker and the secondary particles.
 					interOnia.push_back(Jpsi_1_Fit_noMC);
@@ -873,10 +869,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 					interOnia.clear();
 				}
 			}
-			// Work with all fit results above. (Jpsi_1, Jpsi_2, Ups, Pri)
-			// Primary vertex fitting comes first.
-
-
 			if(!isValidPri){
 				continue;
 			}
@@ -1052,18 +1044,13 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 
 	for(auto piPair_Phi  = piPairCand_Phi.begin(); 
                      piPair_Phi != piPairCand_Phi.end(); piPair_Phi++){
-		std::cout << "First Kaon Mass: " << piPair_Phi->first[0]->currentState().mass() << std::endl;
-		std::cout << "Second Kaon Mass: " << piPair_Phi->first[1]->currentState().mass() << std::endl;
 		isValidPhi    = particlesToVtx(vtxFitTree_Phi,    piPair_Phi->first,    "final Phi");
 		Phi_pi_1_Idx->push_back(piPair_Phi->second[0]);
         Phi_pi_2_Idx->push_back(piPair_Phi->second[1]);
 		if (isValidPhi){
 			extractFitRes(vtxFitTree_Phi, Phi_Fit_noMC, Phi_Vtx_noMC, tmp_Phi_massErr);
-			std::cout << "Phi mass: " << Phi_Fit_noMC->currentState().mass() << std::endl;
-			std::cout << "Phi mass error: " << tmp_Phi_massErr << std::endl;
 		}
 		else{
-			std::cout << "Phi fitting failed." << std::endl;
 			continue;
 		}
 		for(auto muPair_Jpsi_1  = muPairCand_Jpsi.begin(); 
@@ -1078,17 +1065,13 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                 isValidPri = false;
                 // Start constructing the fit tree.
                 // Use particlesToVtx() to fit the quarkonia once more.
-                // [J-U-P] Add appropriate code for phi reconstruction from kaons.
                 isValidJpsi_1 = particlesToVtx(vtxFitTree_Jpsi_1, muPair_Jpsi_1->first, "final Jpsi_1");
                 isValidJpsi_2 = particlesToVtx(vtxFitTree_Jpsi_2, muPair_Jpsi_2->first, "final Jpsi_2");
-                // isValidPhi    = particlesToVtx(vtxFitTree_Phi,    piPair_Phi->first,    "final Phi");
                 // Store the index of the muons.
                 Jpsi_1_mu_1_Idx->push_back(muPair_Jpsi_1->second[0]);
                 Jpsi_1_mu_2_Idx->push_back(muPair_Jpsi_1->second[1]);
                 Jpsi_2_mu_1_Idx->push_back(muPair_Jpsi_2->second[0]);
                 Jpsi_2_mu_2_Idx->push_back(muPair_Jpsi_2->second[1]);
-                // Phi_pi_1_Idx->push_back(piPair_Phi->second[0]);
-                // Phi_pi_2_Idx->push_back(piPair_Phi->second[1]);
                 // Check if all fit trees give non-null results.
 				if(isValidJpsi_1){
 					extractFitRes(vtxFitTree_Jpsi_1, Jpsi_1_Fit_noMC, Jpsi_1_Vtx_noMC, tmp_Jpsi_1_massErr);
@@ -1099,15 +1082,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 				}
 
 				if(isValidJpsi_1 && isValidJpsi_2 ){
-				
-                // if(isValidJpsi_1 && isValidJpsi_2 && isValidPhi){
-                //     // Extract the vertex and the particle parameters from valid results.
-                //     // Here, when an invalid fit is detected, the massErr is set to -9.
-                //     extractFitRes(vtxFitTree_Jpsi_1, Jpsi_1_Fit_noMC, Jpsi_1_Vtx_noMC, tmp_Jpsi_1_massErr);
-                //     extractFitRes(vtxFitTree_Jpsi_2, Jpsi_2_Fit_noMC, Jpsi_2_Vtx_noMC, tmp_Jpsi_2_massErr);
-                //     extractFitRes(vtxFitTree_Phi,       Phi_Fit_noMC,    Phi_Vtx_noMC,    tmp_Phi_massErr);
-                //     // Look for "Good Fit". Judge by the massErr.
-
 					if(tmp_Jpsi_1_massErr >= 0.0 && tmp_Jpsi_2_massErr >= 0.0 && tmp_Phi_massErr >= 0.0){
 						// Initialize the final fitting marker and the secondary particles.
 						interOnia.push_back(Jpsi_1_Fit_noMC);
@@ -1117,179 +1091,209 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 						isValidPri = particlesToVtx(vtxFitTree_Pri, interOnia, "primary vertex");
 						interOnia.clear();
 					}
+					if(isValidPri){
+						// Extract the vertex and the particle parameters from valid results.
+						extractFitRes(vtxFitTree_Pri, Pri_Fit_noMC, Pri_Vtx_noMC, tmp_Pri_massErr);
+						getDynamics(Pri_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
+						// Store the fitting results into temporary vectors.
+						Pri_mass->push_back(Pri_Fit_noMC->currentState().mass());
+						Pri_massErr->push_back(tmp_Pri_massErr);
+						Pri_ctau->push_back(   GetcTau(   Pri_Vtx_noMC, Pri_Fit_noMC, theBeamSpotV));
+						Pri_ctauErr->push_back(GetcTauErr(Pri_Vtx_noMC, Pri_Fit_noMC, theBeamSpotV));
+						Pri_VtxProb->push_back(ChiSquaredProbability((double)(Pri_Vtx_noMC->chiSquared()), 
+																	(double)(Pri_Vtx_noMC->degreesOfFreedom())));
+						Pri_Chi2->push_back(Pri_Vtx_noMC->chiSquared());
+						Pri_ndof->push_back(Pri_Vtx_noMC->degreesOfFreedom());
+						Pri_px->push_back(Pri_Fit_noMC->currentState().kinematicParameters().momentum().x());
+						Pri_py->push_back(Pri_Fit_noMC->currentState().kinematicParameters().momentum().y()); 
+						Pri_pz->push_back(Pri_Fit_noMC->currentState().kinematicParameters().momentum().z());
+						Pri_phi->push_back(tmp_phi);
+						Pri_eta->push_back(tmp_eta);
+						Pri_pt->push_back(tmp_pt);
+						vtxFitTree_Phi->movePointerToTheFirstChild();
+						RefCountedKinematicParticle fitKaon1 = vtxFitTree_Phi->currentParticle();
+						double Kaon1M_fit_mix = fitKaon1->currentState().mass();
+						double Kaon1Px_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().x();
+						double Kaon1Py_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().y();
+						double Kaon1Pz_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().z();
+						vtxFitTree_Phi->movePointerToTheNextChild();
+						RefCountedKinematicParticle fitKaon2 = vtxFitTree_Phi->currentParticle();
+						double Kaon2M_fit_mix = fitKaon2->currentState().mass();
+						double Kaon2Px_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().x();
+						double Kaon2Py_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().y();
+						double Kaon2Pz_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().z();
+
+						if(isValidJpsi_1){
+							getDynamics(Jpsi_1_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
+							Jpsi_1_mass->push_back(    Jpsi_1_Fit_noMC->currentState().mass());
+							Jpsi_1_massDiff->push_back(Jpsi_1_Fit_noMC->currentState().mass() - myJpsiMass);
+							Jpsi_1_massErr->push_back( tmp_Jpsi_1_massErr);
+							Jpsi_1_ctau->push_back(   GetcTau(   Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
+							Jpsi_1_ctauErr->push_back(GetcTauErr(Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
+							Jpsi_1_Chi2->push_back(double(Jpsi_1_Vtx_noMC->chiSquared()));
+							Jpsi_1_ndof->push_back(double(Jpsi_1_Vtx_noMC->degreesOfFreedom()));
+							Jpsi_1_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_1_Vtx_noMC->chiSquared()), 
+																			(double)(Jpsi_1_Vtx_noMC->degreesOfFreedom())));
+							Jpsi_1_px->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().x());
+							Jpsi_1_py->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().y());
+							Jpsi_1_pz->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().z());
+							Jpsi_1_phi->push_back(tmp_pt);
+							Jpsi_1_eta->push_back(tmp_eta);
+							Jpsi_1_pt->push_back(tmp_pt);
+						}
+						else{
+							
+						// Store "error code" -9 for the secondary particles (quarkonia).
+
+							Jpsi_1_mass->push_back(-9);
+							Jpsi_1_massErr->push_back(-9);
+							Jpsi_1_massDiff->push_back(-9);
+							Jpsi_1_ctau->push_back(-9);
+							Jpsi_1_ctauErr->push_back(-9);
+							Jpsi_1_Chi2->push_back(-9);
+							Jpsi_1_ndof->push_back(-9);
+							Jpsi_1_VtxProb->push_back(-9);
+							Jpsi_1_px->push_back(-9);
+							Jpsi_1_py->push_back(-9);
+							Jpsi_1_pz->push_back(-9);
+							Jpsi_1_phi->push_back(-9);
+							Jpsi_1_eta->push_back(-9);
+							Jpsi_1_pt->push_back(-9);
+						}
+						if(isValidJpsi_2){
+							getDynamics(Jpsi_2_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
+							Jpsi_2_mass->push_back(    Jpsi_2_Fit_noMC->currentState().mass());
+							Jpsi_2_massDiff->push_back(Jpsi_2_Fit_noMC->currentState().mass() - myJpsiMass);
+							Jpsi_2_massErr->push_back( tmp_Jpsi_2_massErr);
+							Jpsi_2_ctau->push_back(   GetcTau(   Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
+							Jpsi_2_ctauErr->push_back(GetcTauErr(Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
+							Jpsi_2_Chi2->push_back(double(Jpsi_2_Vtx_noMC->chiSquared()));
+							Jpsi_2_ndof->push_back(double(Jpsi_2_Vtx_noMC->degreesOfFreedom()));
+							Jpsi_2_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_2_Vtx_noMC->chiSquared()), 
+																			(double)(Jpsi_2_Vtx_noMC->degreesOfFreedom())));
+							Jpsi_2_px->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().x());
+							Jpsi_2_py->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().y());
+							Jpsi_2_pz->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().z());
+							Jpsi_2_phi->push_back(tmp_pt);
+							Jpsi_2_eta->push_back(tmp_eta);
+							Jpsi_2_pt->push_back(tmp_pt);
+						}
+						// [TODO] Store the difference between fitted mass with std. mass.
+						// [TODO] Store pT eta phi ctau and other kinematic parameters. "As much as possible"
+						// [HINT] Only Jpsi ctau required. 
+						// [HINT] DR may be useful in BKG suppression. (To deal with pile up. Do it later.)
+						else{
+							// Store "error code" -9 for the secondary particles (quarkonia).
+							Jpsi_2_mass->push_back(-9);
+							Jpsi_2_massErr->push_back(-9);
+							Jpsi_2_massDiff->push_back(-9);
+							Jpsi_2_ctau->push_back(-9);
+							Jpsi_2_ctauErr->push_back(-9);
+							Jpsi_2_Chi2->push_back(-9);
+							Jpsi_2_ndof->push_back(-9);
+							Jpsi_2_VtxProb->push_back(-9);
+							Jpsi_2_px->push_back(-9);
+							Jpsi_2_py->push_back(-9);
+							Jpsi_2_pz->push_back(-9);
+							Jpsi_2_phi->push_back(-9);
+							Jpsi_2_eta->push_back(-9);
+							Jpsi_2_pt->push_back(-9);
+						}
+						if(isValidPhi){
+							getDynamics(Phi_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
+							Phi_mass->push_back(    Phi_Fit_noMC->currentState().mass());
+							Phi_massDiff->push_back(Phi_Fit_noMC->currentState().mass() - myPhiMass);
+							Phi_massErr->push_back( tmp_Phi_massErr);
+							Phi_Chi2->push_back(double(Phi_Vtx_noMC->chiSquared()));
+							Phi_ndof->push_back(double(Phi_Vtx_noMC->degreesOfFreedom()));
+							Phi_VtxProb->push_back(ChiSquaredProbability((double)(Phi_Vtx_noMC->chiSquared()), 
+																		(double)(Phi_Vtx_noMC->degreesOfFreedom())));
+							Phi_px->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().x());
+							Phi_py->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().y());
+							Phi_pz->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().z());
+							Phi_phi->push_back(tmp_pt);
+							Phi_eta->push_back(tmp_eta);
+							Phi_pt->push_back(tmp_pt);
+						}
+						else{
+							// Store "error code" -9 for the secondary particles (quarkonia).
+							Phi_mass->push_back(-9);
+							Phi_massErr->push_back(-9);
+							Phi_massDiff->push_back(-9);
+							Phi_Chi2->push_back(-9);
+							Phi_ndof->push_back(-9);
+							Phi_VtxProb->push_back(-9);
+							Phi_px->push_back(-9);
+							Phi_py->push_back(-9);
+							Phi_pz->push_back(-9);
+							Phi_phi->push_back(-9);
+							Phi_eta->push_back(-9);
+							Phi_pt->push_back(-9);
+						}
+					}
+					else{
+						// Store "error code" -999 for the primary vertex fitting.
+						Jpsi_1_mass->push_back(-9);
+						Jpsi_1_massErr->push_back(-9);
+						Jpsi_1_massDiff->push_back(-9);
+						Jpsi_1_ctau->push_back(-9);
+						Jpsi_1_ctauErr->push_back(-9);
+						Jpsi_1_Chi2->push_back(-9);
+						Jpsi_1_ndof->push_back(-9);
+						Jpsi_1_VtxProb->push_back(-9);
+						Jpsi_1_px->push_back(-9);
+						Jpsi_1_py->push_back(-9);
+						Jpsi_1_pz->push_back(-9);
+						Jpsi_1_phi->push_back(-9);
+						Jpsi_1_eta->push_back(-9);
+						Jpsi_1_pt->push_back(-9);
+
+						Jpsi_2_mass->push_back(-9);
+						Jpsi_2_massErr->push_back(-9);
+						Jpsi_2_massDiff->push_back(-9);
+						Jpsi_2_ctau->push_back(-9);
+						Jpsi_2_ctauErr->push_back(-9);
+						Jpsi_2_Chi2->push_back(-9);
+						Jpsi_2_ndof->push_back(-9);
+						Jpsi_2_VtxProb->push_back(-9);
+						Jpsi_2_px->push_back(-9);
+						Jpsi_2_py->push_back(-9);
+						Jpsi_2_pz->push_back(-9);
+						Jpsi_2_phi->push_back(-9);
+						Jpsi_2_eta->push_back(-9);
+						Jpsi_2_pt->push_back(-9);
+
+						Phi_mass->push_back(-9);
+						Phi_massErr->push_back(-9);
+						Phi_massDiff->push_back(-9);
+						Phi_Chi2->push_back(-9);
+						Phi_ndof->push_back(-9);
+						Phi_VtxProb->push_back(-9);
+						Phi_px->push_back(-9);
+						Phi_py->push_back(-9);
+						Phi_pz->push_back(-9);
+						Phi_phi->push_back(-9);
+						Phi_eta->push_back(-9);
+						Phi_pt->push_back(-9);
+
+						Pri_mass->push_back(-999);
+						Pri_massErr->push_back(-999);
+						Pri_ctau->push_back(-999);
+						Pri_ctauErr->push_back(-999);
+						Pri_VtxProb->push_back(-999);
+						Pri_Chi2->push_back(-999);
+						Pri_ndof->push_back(-999);
+						Pri_px->push_back(-999);
+						Pri_py->push_back(-999);
+						Pri_pz->push_back(-999);
+						Pri_phi->push_back(-999);
+						Pri_eta->push_back(-999);
+						Pri_pt->push_back(-999);
+					}
+					// Then comes the secondary particles (quarkonia).
 				}
                 // Work with all fit results above. (Jpsi_1, Jpsi_2, Ups, Pri)
                 // Primary vertex fitting comes first.
-  
-
-                if(isValidPri){
-                    // Extract the vertex and the particle parameters from valid results.
-                    extractFitRes(vtxFitTree_Pri, Pri_Fit_noMC, Pri_Vtx_noMC, tmp_Pri_massErr);
-                    getDynamics(Pri_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
-                    // Store the fitting results into temporary vectors.
-                    Pri_mass->push_back(Pri_Fit_noMC->currentState().mass());
-                    Pri_massErr->push_back(tmp_Pri_massErr);
-                    Pri_ctau->push_back(   GetcTau(   Pri_Vtx_noMC, Pri_Fit_noMC, theBeamSpotV));
-                    Pri_ctauErr->push_back(GetcTauErr(Pri_Vtx_noMC, Pri_Fit_noMC, theBeamSpotV));
-                    Pri_VtxProb->push_back(ChiSquaredProbability((double)(Pri_Vtx_noMC->chiSquared()), 
-                                                                 (double)(Pri_Vtx_noMC->degreesOfFreedom())));
-                    Pri_Chi2->push_back(Pri_Vtx_noMC->chiSquared());
-                    Pri_ndof->push_back(Pri_Vtx_noMC->degreesOfFreedom());
-                    Pri_px->push_back(Pri_Fit_noMC->currentState().kinematicParameters().momentum().x());
-                    Pri_py->push_back(Pri_Fit_noMC->currentState().kinematicParameters().momentum().y()); 
-                    Pri_pz->push_back(Pri_Fit_noMC->currentState().kinematicParameters().momentum().z());
-                    Pri_phi->push_back(tmp_phi);
-                    Pri_eta->push_back(tmp_eta);
-                    Pri_pt->push_back(tmp_pt);
-					std::cout << "Found candidate" << std::endl;
-					std::cout << "Jpsi_1: " << Jpsi_1_Fit_noMC->currentState().mass() << std::endl;
-					std::cout << "Jpsi_2: " << Jpsi_2_Fit_noMC->currentState().mass() << std::endl;
-					std::cout << "Phi: " << Phi_Fit_noMC->currentState().mass() << std::endl;
-					vtxFitTree_Phi->movePointerToTheFirstChild();
-					RefCountedKinematicParticle fitKaon1 = vtxFitTree_Phi->currentParticle();
-					double Kaon1M_fit_mix = fitKaon1->currentState().mass();
-					double Kaon1Px_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().x();
-					double Kaon1Py_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().y();
-					double Kaon1Pz_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().z();
-					std::cout << "Kaon1 mass: " << Kaon1M_fit_mix << std::endl;
-					std::cout << "Kaon1 px: " << Kaon1Px_fit_mix << std::endl;
-					std::cout << "Kaon1 py: " << Kaon1Py_fit_mix << std::endl;
-					std::cout << "Kaon1 pz: " << Kaon1Pz_fit_mix << std::endl;
-					vtxFitTree_Phi->movePointerToTheNextChild();
-					RefCountedKinematicParticle fitKaon2 = vtxFitTree_Phi->currentParticle();
-					double Kaon2M_fit_mix = fitKaon2->currentState().mass();
-					double Kaon2Px_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().x();
-					double Kaon2Py_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().y();
-					double Kaon2Pz_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().z();
-					std::cout << "Kaon2 mass: " << Kaon2M_fit_mix << std::endl;
-					std::cout << "Kaon2 px: " << Kaon2Px_fit_mix << std::endl;
-					std::cout << "Kaon2 py: " << Kaon2Py_fit_mix << std::endl;
-					std::cout << "Kaon2 pz: " << Kaon2Pz_fit_mix << std::endl;
-                }
-                else{
-                    // Store "error code" -999 for the primary vertex fitting.
-                    Pri_mass->push_back(-999);
-                    Pri_massErr->push_back(-999);
-                    Pri_ctau->push_back(-999);
-                    Pri_ctauErr->push_back(-999);
-                    Pri_VtxProb->push_back(-999);
-                    Pri_Chi2->push_back(-999);
-                    Pri_ndof->push_back(-999);
-                    Pri_px->push_back(-999);
-                    Pri_py->push_back(-999);
-                    Pri_pz->push_back(-999);
-                    Pri_phi->push_back(-999);
-                    Pri_eta->push_back(-999);
-                    Pri_pt->push_back(-999);
-                }
-                // Then comes the secondary particles (quarkonia).
-                if(isValidJpsi_1){
-                    getDynamics(Jpsi_1_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
-                    Jpsi_1_mass->push_back(    Jpsi_1_Fit_noMC->currentState().mass());
-                    Jpsi_1_massDiff->push_back(Jpsi_1_Fit_noMC->currentState().mass() - myJpsiMass);
-                    Jpsi_1_massErr->push_back( tmp_Jpsi_1_massErr);
-                    Jpsi_1_ctau->push_back(   GetcTau(   Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
-                    Jpsi_1_ctauErr->push_back(GetcTauErr(Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
-                    Jpsi_1_Chi2->push_back(double(Jpsi_1_Vtx_noMC->chiSquared()));
-                    Jpsi_1_ndof->push_back(double(Jpsi_1_Vtx_noMC->degreesOfFreedom()));
-                    Jpsi_1_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_1_Vtx_noMC->chiSquared()), 
-                                                                    (double)(Jpsi_1_Vtx_noMC->degreesOfFreedom())));
-                    Jpsi_1_px->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().x());
-                    Jpsi_1_py->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().y());
-                    Jpsi_1_pz->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().z());
-                    Jpsi_1_phi->push_back(tmp_pt);
-                    Jpsi_1_eta->push_back(tmp_eta);
-                    Jpsi_1_pt->push_back(tmp_pt);
-                }
-                else{
-                    
-		// Store "error code" -9 for the secondary particles (quarkonia).
-
-                    Jpsi_1_mass->push_back(-9);
-                    Jpsi_1_massErr->push_back(-9);
-                    Jpsi_1_massDiff->push_back(-9);
-                    Jpsi_1_ctau->push_back(-9);
-                    Jpsi_1_ctauErr->push_back(-9);
-                    Jpsi_1_Chi2->push_back(-9);
-                    Jpsi_1_ndof->push_back(-9);
-                    Jpsi_1_VtxProb->push_back(-9);
-                    Jpsi_1_px->push_back(-9);
-                    Jpsi_1_py->push_back(-9);
-                    Jpsi_1_pz->push_back(-9);
-                    Jpsi_1_phi->push_back(-9);
-                    Jpsi_1_eta->push_back(-9);
-                    Jpsi_1_pt->push_back(-9);
-                }
-                if(isValidJpsi_2){
-                    getDynamics(Jpsi_2_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
-                    Jpsi_2_mass->push_back(    Jpsi_2_Fit_noMC->currentState().mass());
-                    Jpsi_2_massDiff->push_back(Jpsi_2_Fit_noMC->currentState().mass() - myJpsiMass);
-                    Jpsi_2_massErr->push_back( tmp_Jpsi_2_massErr);
-                    Jpsi_2_ctau->push_back(   GetcTau(   Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
-                    Jpsi_2_ctauErr->push_back(GetcTauErr(Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
-                    Jpsi_2_Chi2->push_back(double(Jpsi_2_Vtx_noMC->chiSquared()));
-                    Jpsi_2_ndof->push_back(double(Jpsi_2_Vtx_noMC->degreesOfFreedom()));
-                    Jpsi_2_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_2_Vtx_noMC->chiSquared()), 
-                                                                    (double)(Jpsi_2_Vtx_noMC->degreesOfFreedom())));
-                    Jpsi_2_px->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().x());
-                    Jpsi_2_py->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().y());
-                    Jpsi_2_pz->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().z());
-                    Jpsi_2_phi->push_back(tmp_pt);
-                    Jpsi_2_eta->push_back(tmp_eta);
-                    Jpsi_2_pt->push_back(tmp_pt);
-                }
-                // [TODO] Store the difference between fitted mass with std. mass.
-                // [TODO] Store pT eta phi ctau and other kinematic parameters. "As much as possible"
-                // [HINT] Only Jpsi ctau required. 
-                // [HINT] DR may be useful in BKG suppression. (To deal with pile up. Do it later.)
-                else{
-                    // Store "error code" -9 for the secondary particles (quarkonia).
-                    Jpsi_2_mass->push_back(-9);
-                    Jpsi_2_massErr->push_back(-9);
-                    Jpsi_2_massDiff->push_back(-9);
-                    Jpsi_2_ctau->push_back(-9);
-                    Jpsi_2_ctauErr->push_back(-9);
-                    Jpsi_2_Chi2->push_back(-9);
-                    Jpsi_2_ndof->push_back(-9);
-                    Jpsi_2_VtxProb->push_back(-9);
-                    Jpsi_2_px->push_back(-9);
-                    Jpsi_2_py->push_back(-9);
-                    Jpsi_2_pz->push_back(-9);
-                    Jpsi_2_phi->push_back(-9);
-                    Jpsi_2_eta->push_back(-9);
-                    Jpsi_2_pt->push_back(-9);
-                }
-                if(isValidPhi){
-                    getDynamics(Phi_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
-                    Phi_mass->push_back(    Phi_Fit_noMC->currentState().mass());
-                    Phi_massDiff->push_back(Phi_Fit_noMC->currentState().mass() - myPhiMass);
-                    Phi_massErr->push_back( tmp_Phi_massErr);
-                    Phi_Chi2->push_back(double(Phi_Vtx_noMC->chiSquared()));
-                    Phi_ndof->push_back(double(Phi_Vtx_noMC->degreesOfFreedom()));
-                    Phi_VtxProb->push_back(ChiSquaredProbability((double)(Phi_Vtx_noMC->chiSquared()), 
-                                                                 (double)(Phi_Vtx_noMC->degreesOfFreedom())));
-                    Phi_px->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().x());
-                    Phi_py->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().y());
-                    Phi_pz->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().z());
-                    Phi_phi->push_back(tmp_pt);
-                    Phi_eta->push_back(tmp_eta);
-                    Phi_pt->push_back(tmp_pt);
-                }
-                else{
-                    // Store "error code" -9 for the secondary particles (quarkonia).
-                    Phi_mass->push_back(-9);
-                    Phi_massErr->push_back(-9);
-                    Phi_massDiff->push_back(-9);
-                    Phi_Chi2->push_back(-9);
-                    Phi_ndof->push_back(-9);
-                    Phi_VtxProb->push_back(-9);
-                    Phi_px->push_back(-9);
-                    Phi_py->push_back(-9);
-                    Phi_pz->push_back(-9);
-                    Phi_phi->push_back(-9);
-                    Phi_eta->push_back(-9);
-                    Phi_pt->push_back(-9);
-                }
             }
         }
     }
