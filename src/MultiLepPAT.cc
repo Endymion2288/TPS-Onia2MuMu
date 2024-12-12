@@ -1045,8 +1045,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 	for(auto piPair_Phi  = piPairCand_Phi.begin(); 
                      piPair_Phi != piPairCand_Phi.end(); piPair_Phi++){
 		isValidPhi    = particlesToVtx(vtxFitTree_Phi,    piPair_Phi->first,    "final Phi");
-		Phi_pi_1_Idx->push_back(piPair_Phi->second[0]);
-        Phi_pi_2_Idx->push_back(piPair_Phi->second[1]);
 		if (isValidPhi){
 			extractFitRes(vtxFitTree_Phi, Phi_Fit_noMC, Phi_Vtx_noMC, tmp_Phi_massErr);
 		}
@@ -1068,6 +1066,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                 isValidJpsi_1 = particlesToVtx(vtxFitTree_Jpsi_1, muPair_Jpsi_1->first, "final Jpsi_1");
                 isValidJpsi_2 = particlesToVtx(vtxFitTree_Jpsi_2, muPair_Jpsi_2->first, "final Jpsi_2");
                 // Store the index of the muons.
+				Phi_pi_1_Idx->push_back(piPair_Phi->second[0]);
+        		Phi_pi_2_Idx->push_back(piPair_Phi->second[1]);
                 Jpsi_1_mu_1_Idx->push_back(muPair_Jpsi_1->second[0]);
                 Jpsi_1_mu_2_Idx->push_back(muPair_Jpsi_1->second[1]);
                 Jpsi_2_mu_1_Idx->push_back(muPair_Jpsi_2->second[0]);
