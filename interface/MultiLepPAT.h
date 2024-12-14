@@ -273,9 +273,9 @@ private:
 	static constexpr double myPhiMass  = 1.019455, myPhiMassErr    = 0.000020;
 	static constexpr double myMuMass = 0.1056583745;
 	static constexpr double myMuMassErr = 0.0000000023; // From PDG 2024
-	static constexpr double myPiMass = 0.493677; // Kaon mass and error
+	static constexpr double myKMass = 0.493677; // Kaon mass and error
 	// try
-	static constexpr double myPiMassErr = 0.000015; // From PDG 2024
+	static constexpr double myKMassErr = 0.000015; // From PDG 2024
 
     // Constructing TTree object [Annotation by Eric Wang, 20240626]
     
@@ -332,7 +332,7 @@ private:
     // Muons from Jpsi and Upsilon.
     vector<float> *Jpsi_1_mu_1_Idx, *Jpsi_1_mu_2_Idx, 
                   *Jpsi_2_mu_1_Idx, *Jpsi_2_mu_2_Idx,
-                     *Phi_pi_1_Idx,    *Phi_pi_2_Idx;
+                      *Phi_K_1_Idx,     *Phi_K_2_Idx;
 
     // [J-U-P] To add branches for the reconstructed phi.
 
