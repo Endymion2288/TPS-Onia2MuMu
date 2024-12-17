@@ -333,11 +333,15 @@ private:
     vector<float>  *mupulldXdZ_pos_noArb_any, *mupulldYdZ_pos_noArb_any;
 
     // Muons from Jpsi and Upsilon.
-    vector<float> *Jpsi_1_mu_1_Idx, *Jpsi_1_mu_2_Idx, 
-                  *Jpsi_2_mu_1_Idx, *Jpsi_2_mu_2_Idx,
-                      *Phi_K_1_Idx,     *Phi_K_2_Idx;
-
-    // [J-U-P] To add branches for the reconstructed phi.
+    vector<unsigned int> *Jpsi_1_mu_1_Idx, *Jpsi_1_mu_2_Idx, 
+                         *Jpsi_2_mu_1_Idx, *Jpsi_2_mu_2_Idx,
+                             *Phi_K_1_Idx,     *Phi_K_2_Idx;
+    
+    // Branches for the supposed kaon tracks from Phi decay.
+    vector<float>        *Phi_K_1_px, *Phi_K_1_py, *Phi_K_1_pz,
+                         *Phi_K_2_px, *Phi_K_2_py, *Phi_K_2_pz,
+                         *Phi_K_1_eta, *Phi_K_1_phi, *Phi_K_1_pt,
+                         *Phi_K_2_eta, *Phi_K_2_phi, *Phi_K_2_pt;
 
     // Reconstructed Jpsi and Upsilon.
     // Note: Used "vector<T>* a, b" instead of "vector<T> *a, *b"
