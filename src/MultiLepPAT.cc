@@ -567,10 +567,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 
     // Initialize the muon track block [Annotated by Eric Wang, 20240704]
 
-    // Visualize number of muons
-    std::cout << "Number of muons: " << thePATMuonHandle->size();
-	// 以上非必要
-
 	if (thePATMuonHandle->size() >= 4) // Require at least 4 muons present [Annotated by Eric Wang, 20241214]
 	// JJP->4mu+2K, 改回4
 	{
@@ -672,7 +668,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			// }
 
 			muJpsiFilterRes->push_back(isJpsiTrigMatch); // 这一步内存溢出了？？？
-			std::cout << "0" << std::endl;
 		}
 	} // if two muons
 
@@ -982,7 +977,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             // Note here that transTrackPair is a vector of RefCountedKinematicParticle.
             if(particlesToVtx(transTrackPair)){
                 KPairCand_Phi.push_back(std::make_pair(transTrackPair, transTrackPairId) );
-                // printf(">>> Adding track pair [  %d    %d  ] <<<\n", transTrackPairId[0], transTrackPairId[1]);
             }
             // Clear the transient muon pair for the next pair.
             transTrackPair.pop_back();
