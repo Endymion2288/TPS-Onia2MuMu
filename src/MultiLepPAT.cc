@@ -207,7 +207,7 @@ MultiLepPAT::MultiLepPAT(const edm::ParameterSet &iConfig)
 
       Jpsi_1_ctau(0), Jpsi_1_ctauErr(0), Jpsi_1_Chi2(0), Jpsi_1_ndof(0), Jpsi_1_VtxProb(0),
       Jpsi_2_ctau(0), Jpsi_2_ctauErr(0), Jpsi_2_Chi2(0), Jpsi_2_ndof(0), Jpsi_2_VtxProb(0),
-                                            Phi_Chi2(0),    Phi_ndof(0),    Phi_VtxProb(0),
+      Phi_ctau(0),    Phi_ctauErr(0),    Phi_Chi2(0),    Phi_ndof(0),    Phi_VtxProb(0),
       
       Jpsi_1_phi(0), Jpsi_1_eta(0), Jpsi_1_pt(0),
       Jpsi_2_phi(0), Jpsi_2_eta(0), Jpsi_2_pt(0),
