@@ -1111,6 +1111,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                     Phi_mass->push_back(    Phi_Fit_noMC->currentState().mass());
                     Phi_massDiff->push_back(Phi_Fit_noMC->currentState().mass() - myPhiMass);
                     Phi_massErr->push_back( tmp_Phi_massErr);
+					Phi_ctau->push_back(   GetcTau(   Phi_Vtx_noMC, Phi_Fit_noMC, theBeamSpotV));
+                	Phi_ctauErr->push_back(GetcTauErr(Phi_Vtx_noMC, Phi_Fit_noMC, theBeamSpotV));
                     Phi_Chi2->push_back(double(Phi_Vtx_noMC->chiSquared()));
                     Phi_ndof->push_back(double(Phi_Vtx_noMC->degreesOfFreedom()));
                     Phi_VtxProb->push_back(ChiSquaredProbability((double)(Phi_Vtx_noMC->chiSquared()), 
@@ -1373,6 +1375,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
     Phi_mass->clear();
     Phi_massErr->clear();
     Phi_massDiff->clear();
+	Phi_ctau->clear();
+    Phi_ctauErr->clear();
     Phi_Chi2->clear();
     Phi_ndof->clear();
     Phi_VtxProb->clear();
@@ -1945,6 +1949,8 @@ void MultiLepPAT::beginJob()
     X_One_Tree_->Branch("Phi_mass", &Phi_mass);
     X_One_Tree_->Branch("Phi_massErr", &Phi_massErr);
     X_One_Tree_->Branch("Phi_massDiff", &Phi_massDiff);
+	X_One_Tree_->Branch("Phi_ctau", &Phi_ctau);
+    X_One_Tree_->Branch("Phi_ctauErr", &Phi_ctauErr);
     X_One_Tree_->Branch("Phi_Chi2", &Phi_Chi2);
     X_One_Tree_->Branch("Phi_ndof", &Phi_ndof);
     X_One_Tree_->Branch("Phi_VtxProb", &Phi_VtxProb);
