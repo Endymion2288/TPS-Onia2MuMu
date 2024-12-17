@@ -549,7 +549,13 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 	priVtxZE = (thePrimaryV.zError());
 	priVtxChiNorm = (thePrimaryV.normalizedChi2());
 	priVtxChi = thePrimaryV.chi2();
-	priVtxCL = ChiSquaredProbability((double)(thePrimaryV.chi2()), (double)(thePrimaryV.ndof()));
+	try{
+		priVtxCL = ChiSquaredProbability((double)(thePrimaryV.chi2()), (double)(thePrimaryV.ndof()));
+	}
+	catch (...){
+		priVtxCL = -9;
+	}
+	// priVtxCL = ChiSquaredProbability((double)(thePrimaryV.chi2()), (double)(thePrimaryV.ndof()));
 	// 这里去掉了XYZ两两的协方差
 
 	edm::Handle<edm::View<pat::Muon> > thePATMuonHandle; //  MINIAOD
@@ -568,7 +574,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
     // Initialize the muon track block [Annotated by Eric Wang, 20240704]
 
     // Visualize number of muons
-    std::cout << "Number of muons: " << thePATMuonHandle->size();
 	// 以上非必要
 
 	if (thePATMuonHandle->size() >= 4) // Require at least 6 muons present [Annotated by Eric Wang, 20240704]
@@ -672,11 +677,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 			// }
 
 			muJpsiFilterRes->push_back(isJpsiTrigMatch); // 这一步内存溢出了？？？
-			std::cout << "0" << std::endl;
 		}
 	} // if two muons
-
-	std::cout << "Finish the part of all muons' trigger match."  << endl;
 
 	if (doMC)
 	{
@@ -800,6 +802,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             transMuPairId.push_back(iMuon2 - thePATMuonHandle->begin());
             // Judging with vertex fitting.
             if(!particlesToVtx(transMuonPair)){
+				transMuonPair.pop_back();
+            	transMuPairId.pop_back();
                 continue;
             }
             // Passing all the checks, store the muon pair as pairs of RefCountedKinematicParticle.
@@ -815,8 +819,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
         transMuonPair.pop_back();
         transMuPairId.pop_back();
     }
-
-	std::cout << "Finish the part of muon pair."  << endl;
 
 	// 先判定jpsi是否共顶点
 	// Classes for the fitting process.
@@ -902,8 +904,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
     using piList_t = std::pair< vector<pion_t>, vector<uint> >;
     std::vector< piList_t > piPairCand_Phi;
 
-	std::cout << "Start the part of track pair."  << endl;
-	std::cout << "the number of track" << nonMuonPionTrack.size() << endl;
+	// std::cout << "Start the part of track pair."  << endl;
+	// std::cout << "the number of track" << nonMuonPionTrack.size() << endl;
 
     // Selection for the muon candidates
     for(std::vector<edm::View<pat::PackedCandidate>::const_iterator>::const_iterator iTrack1ID = nonMuonPionTrack.begin(); // MINIAOD
@@ -974,8 +976,8 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 
             // Dynamics selection. A very crude selection.
             // Involves more calculation and is therefore done after kinematics.
-            isPhiTrackPair = (0.8 < (iTrack1->p4() + iTrack2->p4()).mass()
-                              && (iTrack1->p4() + iTrack2->p4()).mass() < 1.2); // 要不要加，加多少？
+            isPhiTrackPair = (0.8 < P4_Phi.M()
+                              && P4_Phi.M() < 1.2); // 要不要加，加多少？
 
             // isJpsiMuPair = true;
             // isUpsMuPair  = true;
@@ -987,12 +989,15 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
             transTrackPairId.push_back(iTrack2ID - nonMuonPionTrack.begin());
             // Judging with vertex fitting.
             if(!particlesToVtx(transTrackPair)){
-                continue;
+				transTrackPair.pop_back();
+            	transTrackPairId.pop_back();
+				continue;
             }
             // Passing all the checks, store the muon pair as pairs of RefCountedKinematicParticle.
             if(isPhiTrackPair){
                 piPairCand_Phi.push_back(
                     std::make_pair(transTrackPair, transTrackPairId) );
+				// cout << "Track pair:" << transTrackPairId[0] << " " << transTrackPairId[1] << endl;
             }
             // Clear the transient muon pair for the next pair.
             transTrackPair.pop_back();
@@ -1003,7 +1008,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 		transTrackPairId.pop_back();
     }
 
-	std::cout << "Finish the part of track pair."  << endl;
+	// std::cout << "Finish the part of track pair."  << endl;
 
     /**************************************************************************
      * [Section]
@@ -1093,6 +1098,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 					}
 					if(isValidPri){
 						// Extract the vertex and the particle parameters from valid results.
+						std::cout << "Find Primary Particle!" << endl;
 						extractFitRes(vtxFitTree_Pri, Pri_Fit_noMC, Pri_Vtx_noMC, tmp_Pri_massErr);
 						getDynamics(Pri_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
 						// Store the fitting results into temporary vectors.
@@ -1100,8 +1106,15 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 						Pri_massErr->push_back(tmp_Pri_massErr);
 						Pri_ctau->push_back(   GetcTau(   Pri_Vtx_noMC, Pri_Fit_noMC, theBeamSpotV));
 						Pri_ctauErr->push_back(GetcTauErr(Pri_Vtx_noMC, Pri_Fit_noMC, theBeamSpotV));
-						Pri_VtxProb->push_back(ChiSquaredProbability((double)(Pri_Vtx_noMC->chiSquared()), 
-																	(double)(Pri_Vtx_noMC->degreesOfFreedom())));
+						try{
+							Pri_VtxProb->push_back(ChiSquaredProbability((double)(Pri_Vtx_noMC->chiSquared()), 
+																		(double)(Pri_Vtx_noMC->degreesOfFreedom())));
+						}
+						catch(...){
+							Pri_VtxProb->push_back(-9);
+						}
+						// Pri_VtxProb->push_back(ChiSquaredProbability((double)(Pri_Vtx_noMC->chiSquared()), 
+						// 											(double)(Pri_Vtx_noMC->degreesOfFreedom())));
 						Pri_Chi2->push_back(Pri_Vtx_noMC->chiSquared());
 						Pri_ndof->push_back(Pri_Vtx_noMC->degreesOfFreedom());
 						Pri_px->push_back(Pri_Fit_noMC->currentState().kinematicParameters().momentum().x());
@@ -1110,18 +1123,6 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 						Pri_phi->push_back(tmp_phi);
 						Pri_eta->push_back(tmp_eta);
 						Pri_pt->push_back(tmp_pt);
-						vtxFitTree_Phi->movePointerToTheFirstChild();
-						RefCountedKinematicParticle fitKaon1 = vtxFitTree_Phi->currentParticle();
-						double Kaon1M_fit_mix = fitKaon1->currentState().mass();
-						double Kaon1Px_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().x();
-						double Kaon1Py_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().y();
-						double Kaon1Pz_fit_mix = fitKaon1->currentState().kinematicParameters().momentum().z();
-						vtxFitTree_Phi->movePointerToTheNextChild();
-						RefCountedKinematicParticle fitKaon2 = vtxFitTree_Phi->currentParticle();
-						double Kaon2M_fit_mix = fitKaon2->currentState().mass();
-						double Kaon2Px_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().x();
-						double Kaon2Py_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().y();
-						double Kaon2Pz_fit_mix = fitKaon2->currentState().kinematicParameters().momentum().z();
 
 						if(isValidJpsi_1){
 							getDynamics(Jpsi_1_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
@@ -1132,8 +1133,15 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 							Jpsi_1_ctauErr->push_back(GetcTauErr(Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
 							Jpsi_1_Chi2->push_back(double(Jpsi_1_Vtx_noMC->chiSquared()));
 							Jpsi_1_ndof->push_back(double(Jpsi_1_Vtx_noMC->degreesOfFreedom()));
-							Jpsi_1_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_1_Vtx_noMC->chiSquared()), 
-																			(double)(Jpsi_1_Vtx_noMC->degreesOfFreedom())));
+							try{
+								Jpsi_1_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_1_Vtx_noMC->chiSquared()), 
+																				(double)(Jpsi_1_Vtx_noMC->degreesOfFreedom())));
+							}
+							catch(...){
+								Jpsi_1_VtxProb->push_back(-9);
+							}
+							// Jpsi_1_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_1_Vtx_noMC->chiSquared()), 
+							// 												(double)(Jpsi_1_Vtx_noMC->degreesOfFreedom())));
 							Jpsi_1_px->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().x());
 							Jpsi_1_py->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().y());
 							Jpsi_1_pz->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().z());
@@ -1169,8 +1177,15 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 							Jpsi_2_ctauErr->push_back(GetcTauErr(Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
 							Jpsi_2_Chi2->push_back(double(Jpsi_2_Vtx_noMC->chiSquared()));
 							Jpsi_2_ndof->push_back(double(Jpsi_2_Vtx_noMC->degreesOfFreedom()));
-							Jpsi_2_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_2_Vtx_noMC->chiSquared()), 
-																			(double)(Jpsi_2_Vtx_noMC->degreesOfFreedom())));
+							try{
+								Jpsi_2_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_2_Vtx_noMC->chiSquared()), 
+																				(double)(Jpsi_2_Vtx_noMC->degreesOfFreedom())));
+							}
+							catch(...){
+								Jpsi_2_VtxProb->push_back(-9);
+							}
+							// Jpsi_2_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_2_Vtx_noMC->chiSquared()), 
+							// 												(double)(Jpsi_2_Vtx_noMC->degreesOfFreedom())));
 							Jpsi_2_px->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().x());
 							Jpsi_2_py->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().y());
 							Jpsi_2_pz->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().z());
@@ -1206,8 +1221,15 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 							Phi_massErr->push_back( tmp_Phi_massErr);
 							Phi_Chi2->push_back(double(Phi_Vtx_noMC->chiSquared()));
 							Phi_ndof->push_back(double(Phi_Vtx_noMC->degreesOfFreedom()));
-							Phi_VtxProb->push_back(ChiSquaredProbability((double)(Phi_Vtx_noMC->chiSquared()), 
-																		(double)(Phi_Vtx_noMC->degreesOfFreedom())));
+							try{
+								Phi_VtxProb->push_back(ChiSquaredProbability((double)(Phi_Vtx_noMC->chiSquared()), 
+																				(double)(Phi_Vtx_noMC->degreesOfFreedom())));
+							}
+							catch(...){
+								Phi_VtxProb->push_back(-9);
+							}
+							// Phi_VtxProb->push_back(ChiSquaredProbability((double)(Phi_Vtx_noMC->chiSquared()), 
+							// 											(double)(Phi_Vtx_noMC->degreesOfFreedom())));
 							Phi_px->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().x());
 							Phi_py->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().y());
 							Phi_pz->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().z());
@@ -1303,7 +1325,7 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 		X_One_Tree_->Fill();
 	}
 
-	std::cout << "Finish the part of fitting."  << endl;
+	// std::cout << "Finish the part of fitting."  << endl;
 
 	if (Debug_)
 	{
@@ -1640,6 +1662,7 @@ bool MultiLepPAT::particlesToVtx(const vector<RefCountedKinematicParticle>&  arg
     KinematicParticleVertexFitter fitter;
     RefCountedKinematicTree vertexFitTree;
     bool fitError = false;
+	double vtxprob = 0;
     try{
         vertexFitTree = fitter.fit(arg_FromParticles);
     }catch(...){
@@ -1649,7 +1672,11 @@ bool MultiLepPAT::particlesToVtx(const vector<RefCountedKinematicParticle>&  arg
         return false;
     }
 	RefCountedKinematicVertex vFit_vertex_noMC = vertexFitTree->currentDecayVertex();
-	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+	try{
+	vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+	}catch(...){
+		return false;
+	}
     if (vtxprob < 0.01){
         return false;
     }
@@ -1679,6 +1706,7 @@ bool MultiLepPAT::particlesToVtx(const vector<RefCountedKinematicParticle>&  arg
     KinematicParticleVertexFitter fitter;
     RefCountedKinematicTree vertexFitTree;
     bool fitError = false;
+	double vtxprob = 0;
     try{
         vertexFitTree = fitter.fit(arg_FromParticles);
     }catch(...){
@@ -1689,7 +1717,11 @@ bool MultiLepPAT::particlesToVtx(const vector<RefCountedKinematicParticle>&  arg
         return false;
     }
     RefCountedKinematicVertex vFit_vertex_noMC = vertexFitTree->currentDecayVertex();
-	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+	try{
+	vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+	}catch(...){
+		return false;
+	}
     if (vtxprob < 0.01){
         return false;
     }
@@ -1722,6 +1754,7 @@ bool MultiLepPAT::particlesToVtx(RefCountedKinematicTree&                    arg
                                  const string&                               arg_Message){
     KinematicParticleVertexFitter fitter;
     bool fitError = false;
+	double vtxprob = 0;
     try{
         arg_VertexFitTree = fitter.fit(arg_FromParticles);
     }catch(...){
@@ -1732,7 +1765,11 @@ bool MultiLepPAT::particlesToVtx(RefCountedKinematicTree&                    arg
         return false;
     }
     RefCountedKinematicVertex vFit_vertex_noMC = arg_VertexFitTree->currentDecayVertex();
-	double vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+	try{
+	vtxprob = ChiSquaredProbability((double)(vFit_vertex_noMC->chiSquared()), (double)(vFit_vertex_noMC->degreesOfFreedom()));
+	}catch(...){
+		return false;
+	}
     if (vtxprob < 0.01){
         return false;
     }
@@ -1863,8 +1900,12 @@ bool MultiLepPAT::extractFitRes(RefCountedKinematicTree&     arg_VtxTree,
     // Extract particle and vertex.
     res_Vtx   = arg_VtxTree->currentDecayVertex();
     // Obtain mass error squared and other parameters for the vertex.
+	try{
     res_VtxProb = ChiSquaredProbability((double)(res_Vtx->chiSquared()), 
                                         (double)(res_Vtx->degreesOfFreedom()));
+	}catch(...){
+		res_VtxProb = -9;
+	}
     return true;
 }
 
