@@ -1122,43 +1122,25 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                     Phi_eta->push_back(tmp_eta);
                     Phi_pt->push_back(tmp_pt);
 
-                    // Store the momenta of the kaons.
-                    // Extract the first kaon for Phi
-                	vtxFitTree_Phi->movePointerToTheFirstChild();
-                	RefCountedKinematicParticle fitKaon1 = vtxFitTree_Phi->currentParticle();
-                	double tmp_Kaon_1_Px = fitKaon1->currentState().kinematicParameters().momentum().x();
-                	double tmp_Kaon_1_Py = fitKaon1->currentState().kinematicParameters().momentum().y();
-                	double tmp_Kaon_1_Pz = fitKaon1->currentState().kinematicParameters().momentum().z();
-                    // Calculate the dynamics of the kaon.
-                    double tmp_Kaon_1_Pt, tmp_Kaon_1_Eta, tmp_Kaon_1_Phi;
-                    getDynamics(myKMass, tmp_Kaon_1_Px, tmp_Kaon_1_Py,  tmp_Kaon_1_Pz, 
-                                         tmp_Kaon_1_Pt, tmp_Kaon_1_Eta, tmp_Kaon_1_Phi);
+                    // Push the dynamics of kaons to the corresponding vectors.
+                    // Special note: edm::View<pat::PackedCandidate> behaves like
+                    //               an iterator pointing to the pat::PackedCandidate.
+                    
+                    // Kaon 1
+                    Phi_K_1_px->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->px());
+                    Phi_K_1_py->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->py());
+                    Phi_K_1_pz->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->pz());
+                    Phi_K_1_pt->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->pt());
+                    Phi_K_1_eta->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->eta());
+                    Phi_K_1_phi->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->phi());
 
-                    // Extract the second kaon for Phi
-                	vtxFitTree_Phi->movePointerToTheNextChild();
-                	RefCountedKinematicParticle fitKaon2 = vtxFitTree_Phi->currentParticle();
-                	double tmp_Kaon_2_Px = fitKaon2->currentState().kinematicParameters().momentum().x();
-                	double tmp_Kaon_2_Py = fitKaon2->currentState().kinematicParameters().momentum().y();
-                	double tmp_Kaon_2_Pz = fitKaon2->currentState().kinematicParameters().momentum().z();
-                    // Calculate the dynamics of the kaon.
-                    double tmp_Kaon_2_Pt, tmp_Kaon_2_Eta, tmp_Kaon_2_Phi;
-                    getDynamics(myKMass, tmp_Kaon_2_Px, tmp_Kaon_2_Py,  tmp_Kaon_2_Pz, 
-                                         tmp_Kaon_2_Pt, tmp_Kaon_2_Eta, tmp_Kaon_2_Phi);
-
-                    // Push the dynamics to the corresponding vectors
-                    Phi_K_1_px->push_back(tmp_Kaon_1_Px);
-                    Phi_K_1_py->push_back(tmp_Kaon_1_Py);
-                    Phi_K_1_pz->push_back(tmp_Kaon_1_Pz);
-                    Phi_K_1_pt->push_back(tmp_Kaon_1_Pt);
-                    Phi_K_1_eta->push_back(tmp_Kaon_1_Eta);
-                    Phi_K_1_phi->push_back(tmp_Kaon_1_Phi);
-
-                    Phi_K_2_px->push_back(tmp_Kaon_2_Px);
-                    Phi_K_2_py->push_back(tmp_Kaon_2_Py);
-                    Phi_K_2_pz->push_back(tmp_Kaon_2_Pz);
-                    Phi_K_2_pt->push_back(tmp_Kaon_2_Pt);
-                    Phi_K_2_eta->push_back(tmp_Kaon_2_Eta);
-                    Phi_K_2_phi->push_back(tmp_Kaon_2_Phi);
+                    // Kaon 2
+                    Phi_K_2_px->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->px());
+                    Phi_K_2_py->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->py());
+                    Phi_K_2_pz->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->pz());
+                    Phi_K_2_pt->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->pt());
+                    Phi_K_2_eta->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->eta());
+                    Phi_K_2_phi->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->phi());
                 }
             }
         }
