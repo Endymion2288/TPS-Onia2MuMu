@@ -273,9 +273,12 @@ private:
 	static constexpr double myPhiMass  = 1.019455, myPhiMassErr    = 0.000020;
 	static constexpr double myMuMass = 0.1056583745;
 	static constexpr double myMuMassErr = 0.0000000023; // From PDG 2024
-	static constexpr double myPiMass = 0.493677; // Kaon mass and error
+	static constexpr double myKMass = 0.493677; // Kaon mass and error
 	// try
-	static constexpr double myPiMassErr = 0.000015; // From PDG 2024
+	static constexpr double myKMassErr = 0.000015; // From PDG 2024
+
+    // general restrictions for vtx prob
+    static constexpr double VtxProbCut = 0.01;
 
     // Constructing TTree object [Annotation by Eric Wang, 20240626]
     
@@ -330,11 +333,9 @@ private:
     vector<float>  *mupulldXdZ_pos_noArb_any, *mupulldYdZ_pos_noArb_any;
 
     // Muons from Jpsi and Upsilon.
-    vector<float> *Jpsi_1_mu_1_Idx, *Jpsi_1_mu_2_Idx, 
-                  *Jpsi_2_mu_1_Idx, *Jpsi_2_mu_2_Idx,
-                     *Phi_pi_1_Idx,    *Phi_pi_2_Idx;
-
-    // [J-U-P] To add branches for the reconstructed phi.
+    vector<unsigned int> *Jpsi_1_mu_1_Idx, *Jpsi_1_mu_2_Idx, 
+                         *Jpsi_2_mu_1_Idx, *Jpsi_2_mu_2_Idx,
+                             *Phi_K_1_Idx,     *Phi_K_2_Idx;
 
     // Reconstructed Jpsi and Upsilon.
     // Note: Used "vector<T>* a, b" instead of "vector<T> *a, *b"
@@ -344,7 +345,7 @@ private:
                
     vector<float> *Jpsi_1_ctau, *Jpsi_1_ctauErr, *Jpsi_1_Chi2, *Jpsi_1_ndof, *Jpsi_1_VtxProb,
                   *Jpsi_2_ctau, *Jpsi_2_ctauErr, *Jpsi_2_Chi2, *Jpsi_2_ndof, *Jpsi_2_VtxProb,
-                                                    *Phi_Chi2,    *Phi_ndof,    *Phi_VtxProb;
+                  *Phi_ctau, *Phi_ctauErr, *Phi_Chi2,    *Phi_ndof,    *Phi_VtxProb;
                   
     vector<float> *Jpsi_1_phi, *Jpsi_1_eta, *Jpsi_1_pt,
                   *Jpsi_2_phi, *Jpsi_2_eta, *Jpsi_2_pt,
@@ -357,7 +358,19 @@ private:
     vector<float>    *Pri_mass,  *Pri_massErr,
                      *Pri_ctau,  *Pri_ctauErr, *Pri_Chi2, *Pri_ndof, *Pri_VtxProb,
                      *Pri_px,    *Pri_py,    *Pri_pz, 
-                     *Pri_phi,   *Pri_eta,   *Pri_pt;  
+                     *Pri_phi,   *Pri_eta,   *Pri_pt;
+
+    // Branches for the supposed kaon tracks from Phi decay.
+    vector<float>        *Phi_K_1_px, *Phi_K_1_py, *Phi_K_1_pz,
+                         *Phi_K_2_px, *Phi_K_2_py, *Phi_K_2_pz,
+                         *Phi_K_1_eta, *Phi_K_1_phi, *Phi_K_1_pt,
+                         *Phi_K_2_eta, *Phi_K_2_phi, *Phi_K_2_pt;  
+
+    // Branches for the supposed kaon tracks from Phi decay.
+    vector<float>        *Phi_K_1_px, *Phi_K_1_py, *Phi_K_1_pz,
+                         *Phi_K_2_px, *Phi_K_2_py, *Phi_K_2_pz,
+                         *Phi_K_1_eta, *Phi_K_1_phi, *Phi_K_1_pt,
+                         *Phi_K_2_eta, *Phi_K_2_phi, *Phi_K_2_pt;
 
     //doMC
     vector<float> 
