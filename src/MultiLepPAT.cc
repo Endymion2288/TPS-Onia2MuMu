@@ -800,6 +800,10 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 		}else{
 			continue;
 		}
+		if ((muFromPV->at(iMuon1 - thePATMuonHandle->begin()) != 2)&&
+			(muFromPV->at(iMuon1 - thePATMuonHandle->begin()) != 3)){
+			continue; // 只考虑fromPV=2和3的muon
+		}
         // Build transient track and store.
         TransientTrack transTrk1(muTrack1, &(bFieldHandle));
         transMuonPair.push_back(muPairFactory.particle(transTrk1, muMass, chi2, ndof, muMassSigma));
@@ -824,6 +828,10 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
 				}
 			}else{
 				continue;
+			}
+			if ((muFromPV->at(iMuon2 - thePATMuonHandle->begin()) != 2)&&
+				(muFromPV->at(iMuon2 - thePATMuonHandle->begin()) != 3)){
+				continue; // 只考虑fromPV=2和3的muon
 			}
             TransientTrack transTrk2(muTrack2, &(bFieldHandle));
             // Charge requirement.
@@ -1121,104 +1129,118 @@ void MultiLepPAT::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetu
                 	Pri_phi->push_back(tmp_phi);
                 	Pri_eta->push_back(tmp_eta);
                 	Pri_pt->push_back(tmp_pt);
+				}else{
+					// Use -999999.0 to indicate a bad fit.
+					Pri_mass->push_back(-999999.0);
+					Pri_massErr->push_back(-999999.0);
+					Pri_ctau->push_back(-999999.0);
+					Pri_ctauErr->push_back(-999999.0);
+					Pri_VtxProb->push_back(-999999.0);
+					Pri_Chi2->push_back(-999999.0);
+					Pri_ndof->push_back(-999999.0);
+					Pri_px->push_back(-999999.0);
+					Pri_py->push_back(-999999.0);
+					Pri_pz->push_back(-999999.0);
+					Pri_phi->push_back(-999999.0);
+					Pri_eta->push_back(-999999.0);
+					Pri_pt->push_back(-999999.0);
+				};
 
                     // Store the fitting results into temporary vectors for Jpsi 1.
-                	getDynamics(Jpsi_1_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
-                	Jpsi_1_mass->push_back(    Jpsi_1_Fit_noMC->currentState().mass());
-                	Jpsi_1_massDiff->push_back(Jpsi_1_Fit_noMC->currentState().mass() - myJpsiMass);
-                	Jpsi_1_massErr->push_back( tmp_Jpsi_1_massErr);
-                	Jpsi_1_ctau->push_back(   GetcTau(   Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
-                	Jpsi_1_ctauErr->push_back(GetcTauErr(Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
-                	Jpsi_1_Chi2->push_back(double(Jpsi_1_Vtx_noMC->chiSquared()));
-                	Jpsi_1_ndof->push_back(double(Jpsi_1_Vtx_noMC->degreesOfFreedom()));
-                	Jpsi_1_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_1_Vtx_noMC->chiSquared()), 
-                													(double)(Jpsi_1_Vtx_noMC->degreesOfFreedom())));
-                	Jpsi_1_px->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().x());
-                	Jpsi_1_py->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().y());
-                	Jpsi_1_pz->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().z());
-                	Jpsi_1_phi->push_back(tmp_phi);
-                	Jpsi_1_eta->push_back(tmp_eta);
-                	Jpsi_1_pt->push_back(tmp_pt);
+				getDynamics(Jpsi_1_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
+				Jpsi_1_mass->push_back(    Jpsi_1_Fit_noMC->currentState().mass());
+				Jpsi_1_massDiff->push_back(Jpsi_1_Fit_noMC->currentState().mass() - myJpsiMass);
+				Jpsi_1_massErr->push_back( tmp_Jpsi_1_massErr);
+				Jpsi_1_ctau->push_back(   GetcTau(   Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
+				Jpsi_1_ctauErr->push_back(GetcTauErr(Jpsi_1_Vtx_noMC, Jpsi_1_Fit_noMC, theBeamSpotV));
+				Jpsi_1_Chi2->push_back(double(Jpsi_1_Vtx_noMC->chiSquared()));
+				Jpsi_1_ndof->push_back(double(Jpsi_1_Vtx_noMC->degreesOfFreedom()));
+				Jpsi_1_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_1_Vtx_noMC->chiSquared()), 
+																(double)(Jpsi_1_Vtx_noMC->degreesOfFreedom())));
+				Jpsi_1_px->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().x());
+				Jpsi_1_py->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().y());
+				Jpsi_1_pz->push_back(Jpsi_1_Fit_noMC->currentState().kinematicParameters().momentum().z());
+				Jpsi_1_phi->push_back(tmp_phi);
+				Jpsi_1_eta->push_back(tmp_eta);
+				Jpsi_1_pt->push_back(tmp_pt);
 
-                    // Store the fitting results into temporary vectors for Jpsi 2.
-                    getDynamics(Jpsi_2_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
-                    Jpsi_2_mass->push_back(    Jpsi_2_Fit_noMC->currentState().mass());
-                    Jpsi_2_massDiff->push_back(Jpsi_2_Fit_noMC->currentState().mass() - myJpsiMass);
-                    Jpsi_2_massErr->push_back( tmp_Jpsi_2_massErr);
-                    Jpsi_2_ctau->push_back(   GetcTau(   Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
-                    Jpsi_2_ctauErr->push_back(GetcTauErr(Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
-                    Jpsi_2_Chi2->push_back(double(Jpsi_2_Vtx_noMC->chiSquared()));
-                    Jpsi_2_ndof->push_back(double(Jpsi_2_Vtx_noMC->degreesOfFreedom()));
-                    Jpsi_2_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_2_Vtx_noMC->chiSquared()), 
-                    												(double)(Jpsi_2_Vtx_noMC->degreesOfFreedom())));
-                    Jpsi_2_px->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().x());
-                    Jpsi_2_py->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().y());
-                    Jpsi_2_pz->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().z());
-                    Jpsi_2_phi->push_back(tmp_phi);
-                    Jpsi_2_eta->push_back(tmp_eta);
-                    Jpsi_2_pt->push_back(tmp_pt);
-                    // [HINT] DR may be useful in BKG suppression. (To deal with pile up. Do it later.)
+				// Store the fitting results into temporary vectors for Jpsi 2.
+				getDynamics(Jpsi_2_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
+				Jpsi_2_mass->push_back(    Jpsi_2_Fit_noMC->currentState().mass());
+				Jpsi_2_massDiff->push_back(Jpsi_2_Fit_noMC->currentState().mass() - myJpsiMass);
+				Jpsi_2_massErr->push_back( tmp_Jpsi_2_massErr);
+				Jpsi_2_ctau->push_back(   GetcTau(   Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
+				Jpsi_2_ctauErr->push_back(GetcTauErr(Jpsi_2_Vtx_noMC, Jpsi_2_Fit_noMC, theBeamSpotV));
+				Jpsi_2_Chi2->push_back(double(Jpsi_2_Vtx_noMC->chiSquared()));
+				Jpsi_2_ndof->push_back(double(Jpsi_2_Vtx_noMC->degreesOfFreedom()));
+				Jpsi_2_VtxProb->push_back(ChiSquaredProbability((double)(Jpsi_2_Vtx_noMC->chiSquared()), 
+																(double)(Jpsi_2_Vtx_noMC->degreesOfFreedom())));
+				Jpsi_2_px->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().x());
+				Jpsi_2_py->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().y());
+				Jpsi_2_pz->push_back(Jpsi_2_Fit_noMC->currentState().kinematicParameters().momentum().z());
+				Jpsi_2_phi->push_back(tmp_phi);
+				Jpsi_2_eta->push_back(tmp_eta);
+				Jpsi_2_pt->push_back(tmp_pt);
+				// [HINT] DR may be useful in BKG suppression. (To deal with pile up. Do it later.)
 
-                    // Store the index of the muons.
-                    Jpsi_1_mu_1_Idx->push_back(muQuadID->first.second[0]);
-                    Jpsi_1_mu_2_Idx->push_back(muQuadID->first.second[1]);
-                    Jpsi_2_mu_1_Idx->push_back(muQuadID->second.second[0]);
-                    Jpsi_2_mu_2_Idx->push_back(muQuadID->second.second[1]);
-                    Phi_K_1_Idx->push_back(KPair_Phi->second[0]);
-                    Phi_K_2_Idx->push_back(KPair_Phi->second[1]);
+				// Store the index of the muons.
+				Jpsi_1_mu_1_Idx->push_back(muQuadID->first.second[0]);
+				Jpsi_1_mu_2_Idx->push_back(muQuadID->first.second[1]);
+				Jpsi_2_mu_1_Idx->push_back(muQuadID->second.second[0]);
+				Jpsi_2_mu_2_Idx->push_back(muQuadID->second.second[1]);
+				Phi_K_1_Idx->push_back(KPair_Phi->second[0]);
+				Phi_K_2_Idx->push_back(KPair_Phi->second[1]);
 
-                    // Store the fitting results into temporary vectors for Jpsi 2.
-                    getDynamics(Phi_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
-                    Phi_mass->push_back(    Phi_Fit_noMC->currentState().mass());
-                    Phi_massDiff->push_back(Phi_Fit_noMC->currentState().mass() - myPhiMass);
-                    Phi_massErr->push_back( tmp_Phi_massErr);
-					Phi_ctau->push_back(   GetcTau(   Phi_Vtx_noMC, Phi_Fit_noMC, theBeamSpotV));
-                	Phi_ctauErr->push_back(GetcTauErr(Phi_Vtx_noMC, Phi_Fit_noMC, theBeamSpotV));
-                    Phi_Chi2->push_back(double(Phi_Vtx_noMC->chiSquared()));
-                    Phi_ndof->push_back(double(Phi_Vtx_noMC->degreesOfFreedom()));
-                    Phi_VtxProb->push_back(ChiSquaredProbability((double)(Phi_Vtx_noMC->chiSquared()), 
-                    											 (double)(Phi_Vtx_noMC->degreesOfFreedom())));
-                    Phi_px->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().x());
-                    Phi_py->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().y());
-                    Phi_pz->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().z());
-                    Phi_phi->push_back(tmp_phi);
-                    Phi_eta->push_back(tmp_eta);
-                    Phi_pt->push_back(tmp_pt);
+				// Store the fitting results into temporary vectors for Jpsi 2.
+				getDynamics(Phi_Fit_noMC, tmp_pt, tmp_eta, tmp_phi);
+				Phi_mass->push_back(    Phi_Fit_noMC->currentState().mass());
+				Phi_massDiff->push_back(Phi_Fit_noMC->currentState().mass() - myPhiMass);
+				Phi_massErr->push_back( tmp_Phi_massErr);
+				Phi_ctau->push_back(   GetcTau(   Phi_Vtx_noMC, Phi_Fit_noMC, theBeamSpotV));
+				Phi_ctauErr->push_back(GetcTauErr(Phi_Vtx_noMC, Phi_Fit_noMC, theBeamSpotV));
+				Phi_Chi2->push_back(double(Phi_Vtx_noMC->chiSquared()));
+				Phi_ndof->push_back(double(Phi_Vtx_noMC->degreesOfFreedom()));
+				Phi_VtxProb->push_back(ChiSquaredProbability((double)(Phi_Vtx_noMC->chiSquared()), 
+																(double)(Phi_Vtx_noMC->degreesOfFreedom())));
+				Phi_px->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().x());
+				Phi_py->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().y());
+				Phi_pz->push_back(Phi_Fit_noMC->currentState().kinematicParameters().momentum().z());
+				Phi_phi->push_back(tmp_phi);
+				Phi_eta->push_back(tmp_eta);
+				Phi_pt->push_back(tmp_pt);
 
-                    // Push the dynamics of kaons to the corresponding vectors.
-                    // Special note: edm::View<pat::PackedCandidate> behaves like
-                    //               an iterator pointing to the pat::PackedCandidate.
-                    
-                    // Kaon 1
-                    Phi_K_1_px->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->px());
-                    Phi_K_1_py->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->py());
-                    Phi_K_1_pz->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->pz());
-                    Phi_K_1_pt->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->pt());
-                    Phi_K_1_eta->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->eta());
-                    Phi_K_1_phi->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->phi());
-					Phi_K_1_fromPV->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->fromPV());
-					Phi_K_1_pvAssocQuality->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->pvAssociationQuality());
+				// Push the dynamics of kaons to the corresponding vectors.
+				// Special note: edm::View<pat::PackedCandidate> behaves like
+				//               an iterator pointing to the pat::PackedCandidate.
+				
+				// Kaon 1
+				Phi_K_1_px->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->px());
+				Phi_K_1_py->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->py());
+				Phi_K_1_pz->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->pz());
+				Phi_K_1_pt->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->pt());
+				Phi_K_1_eta->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->eta());
+				Phi_K_1_phi->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->phi());
+				Phi_K_1_fromPV->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->fromPV());
+				Phi_K_1_pvAssocQuality->push_back(nonMuonPionTrack[KPair_Phi->second[0]]->pvAssociationQuality());
 
-                    // Kaon 2
-                    Phi_K_2_px->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->px());
-                    Phi_K_2_py->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->py());
-                    Phi_K_2_pz->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->pz());
-                    Phi_K_2_pt->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->pt());
-                    Phi_K_2_eta->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->eta());
-                    Phi_K_2_phi->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->phi());
-					Phi_K_2_fromPV->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->fromPV());
-					Phi_K_2_pvAssocQuality->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->pvAssociationQuality());
+				// Kaon 2
+				Phi_K_2_px->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->px());
+				Phi_K_2_py->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->py());
+				Phi_K_2_pz->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->pz());
+				Phi_K_2_pt->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->pt());
+				Phi_K_2_eta->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->eta());
+				Phi_K_2_phi->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->phi());
+				Phi_K_2_fromPV->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->fromPV());
+				Phi_K_2_pvAssocQuality->push_back(nonMuonPionTrack[KPair_Phi->second[1]]->pvAssociationQuality());
 
-					#ifdef SHOW_DEBUG
-					std::cout << "finish get all the particles" << endl;
-					#endif
-
-                }
+				#ifdef SHOW_DEBUG
+				std::cout << "finish get all the particles" << endl;
+				#endif
             }
         }
     }
     // Currently: Event
-	if (Pri_VtxProb->size() > 0 || doMC)
+	if (Jpsi_1_mass->size() > 0 || doMC)
 	{
 		X_One_Tree_->Fill();
 	}
