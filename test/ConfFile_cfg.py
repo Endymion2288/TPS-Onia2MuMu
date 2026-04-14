@@ -53,7 +53,25 @@ ivars.register('eventRange',
     default='',
     mult=VarParsing.VarParsing.multiplicity.singleton,
     mytype=VarParsing.VarParsing.varType.string,
-    info='Event range to process, in the format "run:event" or "run:event-run:event" (e.g. "369943:103642411")'
+    info='Event range to process, preferably as "run:lumi:event-run:lumi:event" for single-event debugging'
+)
+ivars.register('lumiRange',
+    default='',
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.string,
+    info='Lumi range to process, in the format "run:lumi-run:lumi"'
+)
+ivars.register('debugOutput',
+    default=False,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.bool,
+    info='Enable verbose candidate-level stdout debug (default: False)'
+)
+ivars.register('debugMask',
+    default=0,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.int,
+    info='Bitmask for staged stdout debug. Used together with debugOutput.'
 )
 ivars.register('reportEvery',
     default=1,
@@ -72,6 +90,49 @@ ivars.register('requireAcceptedCandidatesForMonteCarloTree',
     mult=VarParsing.VarParsing.multiplicity.singleton,
     mytype=VarParsing.VarParsing.varType.bool,
     info='For MC, keep tree entries only when at least one candidate is stored (default: False)'
+)
+ivars.register('doJpsiDecayVtxFit',
+    default=True,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.bool,
+    info='Enable J/psi decay-vertex kinematic fits (default: True)'
+)
+ivars.register('doUpsDecayVtxFit',
+    default=True,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.bool,
+    info='Enable Upsilon decay-vertex kinematic fits (default: True)'
+)
+ivars.register('doPhiDecayVtxFit',
+    default=True,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.bool,
+    info='Enable phi decay-vertex kinematic fits (default: True)'
+)
+ivars.register('doDiOniaVtxFit',
+    default=True,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.bool,
+    info='Enable DiOnia common-vertex kinematic fits (default: True)'
+)
+ivars.register('doPriVtxFit',
+    default=True,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.bool,
+    info='Enable final tri-particle common-vertex kinematic fits (default: True)'
+)
+# ------ Multi-threading options ------
+ivars.register('numThreads',
+    default=1,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.int,
+    info='Number of threads to use (default: 1). Note: Multi-threading must also be enabled in the JobType configuration when running with CRAB.'
+)
+ivars.register('numStreams',
+    default=0,
+    mult=VarParsing.VarParsing.multiplicity.singleton,
+    mytype=VarParsing.VarParsing.varType.int,
+    info='Number of streams to use (default: 0, which means automatic). Note: Multi-threading must also be enabled in the JobType configuration when running with CRAB.'
 )
 
 # --- Default values ---
@@ -146,6 +207,12 @@ if not ivars.runOnMC and ivars.era not in globalTagDict['data']:
 
 process = cms.Process("mkcands")
 
+# ------ Multi-threading configuration ------
+process.options = cms.untracked.PSet(
+    numberOfThreads = cms.untracked.uint32(ivars.numThreads),
+    numberOfStreams = cms.untracked.uint32(ivars.numStreams),
+)
+
 # --- Message logger ---
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.suppressInfo = cms.untracked.vstring("mkcands")
@@ -178,7 +245,9 @@ process.source = cms.Source("PoolSource",
     fileNames  = cms.untracked.vstring(ivars.inputFiles),
 )
 if ivars.eventRange != '':
-    process.source.eventRange = cms.untracked.VEventRange(ivars.eventRange)
+    process.source.eventsToProcess = cms.untracked.VEventRange(ivars.eventRange)
+if ivars.lumiRange != '':
+    process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(ivars.lumiRange)
 if ivars.duplicateCheckMode != '':
     process.source.duplicateCheckMode = cms.untracked.string(ivars.duplicateCheckMode)
 
@@ -218,33 +287,42 @@ process.mkcands = cms.EDAnalyzer('MultiLepPAT',
     PVMaxRho  = cms.untracked.double(2.0),
 
     # ====== Onia mass windows (GeV) ======
-    JpsiMassMin = cms.untracked.double(1.0),
-    JpsiMassMax = cms.untracked.double(4.0),
+    JpsiMassMin = cms.untracked.double(2.8),
+    JpsiMassMax = cms.untracked.double(3.3),
     UpsMassMin  = cms.untracked.double(8.0),
     UpsMassMax  = cms.untracked.double(12.0),
 
     # ====== Meson mass window (GeV) ======
-    PhiMassMin = cms.untracked.double(0.95),
+    PhiMassMin = cms.untracked.double(0.97),
     PhiMassMax = cms.untracked.double(1.07),
 
     # ====== Track kinematics ======
     TrackPtMin = cms.untracked.double(1.0),
-    TrackDRMax = cms.untracked.double(0.7),
+    TrackDRMax = cms.untracked.double(999.0),
 
     # ====== Vertex probability cuts ======
-    OniaDecayVtxProbCut = cms.untracked.double(0.0),
-    PriVtxProbCut       = cms.untracked.double(0.0),
+    OniaDecayVtxProbCut = cms.untracked.double(5e-4),
+    JpsiDecayVtxProbCut = cms.untracked.double(5e-4),
+    UpsDecayVtxProbCut  = cms.untracked.double(5e-4),
+    PhiDecayVtxProbCut  = cms.untracked.double(5e-4),
+    DiOniaVtxProbCut    = cms.untracked.double(5e-3),
+    PriVtxProbCut       = cms.untracked.double(-1.0),
+    DoJpsiDecayVtxFit   = cms.untracked.bool(ivars.doJpsiDecayVtxFit),
+    DoUpsDecayVtxFit    = cms.untracked.bool(ivars.doUpsDecayVtxFit),
+    DoPhiDecayVtxFit    = cms.untracked.bool(ivars.doPhiDecayVtxFit),
+    DoDiOniaVtxFit      = cms.untracked.bool(ivars.doDiOniaVtxFit),
+    DoPriVtxFit         = cms.untracked.bool(ivars.doPriVtxFit),
     PriRequireCommonAssocPV = cms.untracked.bool(True),
     PriRequireTrackPVCompatibility = cms.untracked.bool(True),
     PriTrackDzPVMax = cms.untracked.double(2.0),
     PriTrackDxyPVMax = cms.untracked.double(0.1),
 
     # ====== Per-resonance candidate pT/eta pre-cuts ======
-    JpsiCandPtMin  = cms.untracked.double(0.0),
+    JpsiCandPtMin  = cms.untracked.double(4.0),
     JpsiCandEtaMax = cms.untracked.double(999.0),
-    UpsCandPtMin   = cms.untracked.double(0.0),
+    UpsCandPtMin   = cms.untracked.double(4.0),
     UpsCandEtaMax  = cms.untracked.double(999.0),
-    PhiCandPtMin   = cms.untracked.double(0.0),
+    PhiCandPtMin   = cms.untracked.double(2.0),
     PhiCandEtaMax  = cms.untracked.double(999.0),
 
     # ====== PV selection mode ======
@@ -264,7 +342,8 @@ process.mkcands = cms.EDAnalyzer('MultiLepPAT',
     DoMonteCarloTree = cms.untracked.bool(ivars.runOnMC),
     RequireAcceptedCandidatesForMonteCarloTree = cms.untracked.bool(ivars.requireAcceptedCandidatesForMonteCarloTree),
     DoJPsiMassConstraint = cms.untracked.bool(True),
-    Debug_Output = cms.untracked.bool(False),
+    Debug_Output = cms.untracked.bool(ivars.debugOutput),
+    DebugMask    = cms.untracked.uint32(max(ivars.debugMask, 0)),
 
     # ====== Muon matching ======
     MuonPackedMatchVectorRelPMax = cms.untracked.double(0.01),

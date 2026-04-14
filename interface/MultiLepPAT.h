@@ -44,7 +44,9 @@
 #define _MultiLepPAT_h
 
 // system include files
+#include <cstdint>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -153,6 +155,13 @@ public:
         DzPv = 5
     };
 
+    enum DebugBits : unsigned int {
+        kDebugEventSummary = 1u << 0,
+        kDebugSingleOnia   = 1u << 1,
+        kDebugDiOnia       = 1u << 2,
+        kDebugFinalCand    = 1u << 3
+    };
+
     // Result structure for muon-track matching
     struct MuonTrackMatchResult {
         bool matched;
@@ -207,6 +216,54 @@ public:
         int commonAssocPVIdx;
         float maxAbsDzPV;
         float maxAbsDxyPV;
+    };
+
+    struct DiOniaCandidate {
+        muList_t onia1;
+        muList_t onia2;
+        bool commonRecVtxPass;
+        int commonRecVtxIdx;
+        bool fitValid;
+        bool fitPass;
+        bool passAny;
+        float chi2;
+        float ndof;
+        float vtxProb;
+    };
+
+    struct EventDebugSummary {
+        double mcGenMs;
+        double hltMs;
+        double l1Ms;
+        double pvRecoMs;
+        double fillMuonBlockMs;
+        double mcMatchMs;
+        double pairMuonsMs;
+        double pairTracksMs;
+        double combineCandidatesMs;
+        double totalMs;
+        size_t nRecoMuons;
+        size_t nPackedTracks;
+        size_t nTrackPool;
+        size_t nOnia1Pairs;
+        size_t nOnia2Pairs;
+        size_t nDiOnia;
+        size_t nPhiPairs;
+        size_t nFinalCandidates;
+    };
+
+    struct DebugDaughterRef {
+        std::string label;
+        bool isMuon;
+        unsigned int idx;
+    };
+
+    struct DebugResonanceRef {
+        std::string label;
+        const RefCountedKinematicParticle* fitPart;
+        const RefCountedKinematicVertex* fitVtx;
+        double massErr;
+        std::vector<DebugDaughterRef> daughters;
     };
 
 private:
@@ -304,7 +361,39 @@ private:
                              double arg_massDiff_2, double arg_massErr_2,
                              double arg_massDiff_3, double arg_massErr_3);
     
-    void printKinematics(const RefCountedKinematicParticle& particle, const std::string& name);
+    bool debugEnabled(unsigned int bit) const;
+    std::string debugEventTag() const;
+    void printKinematics(const RefCountedKinematicParticle& particle, const std::string& name) const;
+    void printEventSummaryDebug(const EventDebugSummary& summary) const;
+    void printRecoMuonDebug(unsigned int muIdx, const reco::Vertex& primaryV) const;
+    void printRecoTrackDebug(unsigned int trackIdx,
+                             const reco::Vertex& primaryV,
+                             const edm::Handle<reco::GenParticleCollection>& genParticles) const;
+    void printSingleOniaCandidateDebug(
+        const std::string& label,
+        const std::vector<unsigned int>& muIndices,
+        double prefitMass,
+        const reco::Candidate::LorentzVector& prefitP4,
+        const RefCountedKinematicParticle& fitPart,
+        const RefCountedKinematicVertex& fitVtx,
+        double massErr,
+        const reco::Vertex& primaryV) const;
+    void printDiOniaCandidateDebug(
+        const std::string& onia1Label,
+        const std::string& onia2Label,
+        const DiOniaCandidate& candidate,
+        const RefCountedKinematicParticle& fit1,
+        const RefCountedKinematicVertex& vtx1,
+        double massErr1,
+        const RefCountedKinematicParticle& fit2,
+        const RefCountedKinematicVertex& vtx2,
+        double massErr2,
+        const reco::Vertex& primaryV) const;
+    void printCompositeCandidateDebug(
+        const std::string& channelLabel,
+        const std::vector<DebugResonanceRef>& resonances,
+        const reco::Vertex& primaryV,
+        const edm::Handle<reco::GenParticleCollection>& genParticles) const;
 
     // ======================== Muon-track matching methods ========================
     MuonTrackMatchResult matchMuonToTrack(
@@ -325,6 +414,8 @@ private:
         bool fitPass,
         const PhiKaonDiagnostics& kaon1,
         const PhiKaonDiagnostics& kaon2) const;
+    int commonMuonVertexId(const std::vector<unsigned int>& muIndices) const;
+    void storeDiOniaDiagnostics(const DiOniaCandidate& candidate);
     void storePriDiagnostics(const PriCandidateDiagnostics& diagnostics);
 
     // Store resonance fit results into branches (reduces code duplication)
@@ -367,6 +458,7 @@ private:
     bool    requireAcceptedCandidatesForMonteCarloTree_;
     bool    doJPsiMassCost;
     bool    Debug_;
+    unsigned int debugMask_;
     
     // -- Analysis mode: "JpsiJpsiPhi", "JpsiJpsiUps", "JpsiUpsPhi" --
     std::string analysisModeName_;
@@ -397,8 +489,17 @@ private:
     double trackDRMax_;
     
     // -- Vertex probability cuts --
-    double OniaDecayVtxProbCut_;
+    double legacyOniaDecayVtxProbCut_;
+    double JpsiDecayVtxProbCut_;
+    double UpsDecayVtxProbCut_;
+    double PhiDecayVtxProbCut_;
+    double DiOniaVtxProbCut_;
     double PriVtxProbCut_;
+    bool DoJpsiDecayVtxFit_;
+    bool DoUpsDecayVtxFit_;
+    bool DoPhiDecayVtxFit_;
+    bool DoDiOniaVtxFit_;
+    bool DoPriVtxFit_;
     
     // -- Per-resonance candidate pT and eta pre-cuts --
     double jpsiCandPtMin_,  jpsiCandEtaMax_;
@@ -463,15 +564,19 @@ private:
     // These are populated during analyze() and cleared at end
     reco::Vertex thePrimaryV_;
     reco::Vertex theBeamSpotV_;
+    edm::Handle<VertexCollection> thePrimaryVtxHandle_;
     edm::Handle<edm::View<pat::Muon>> thePATMuonHandle_;
     edm::Handle<edm::View<pat::PackedCandidate>> theTrackHandle_;
+    unsigned int currentRun_;
+    unsigned int currentLumi_;
+    unsigned long long currentEvent_;
     std::vector<edm::View<pat::PackedCandidate>::const_iterator> nonMuonTrack_;
     std::unordered_map<unsigned int, int> handleToNtupleIndex_;
     
     // Muon pair candidates
     std::vector<muList_t> muPairCand_Onia1_;  // J/psi (or 1st quarkonium)
     std::vector<muList_t> muPairCand_Onia2_;  // Upsilon (or 2nd quarkonium, if different)
-    std::vector<std::pair<muList_t, muList_t>> muQuad_Onia_;
+    std::vector<DiOniaCandidate> diOniaCands_;
     
     // Track pair candidates
     using Kaon_t  = RefCountedKinematicParticle;
@@ -480,6 +585,11 @@ private:
 
     // ======================== TTree ========================
     TTree* X_One_Tree_;
+    TTree* X_Config_Tree_;
+    std::string configHLTriggerResultsTag_;
+    std::string configInputGENTag_;
+    std::string configMuonLabelTag_;
+    std::string configTrackLabelTag_;
     
     // -- Event info --
     unsigned int runNum, evtNum, lumiNum;
@@ -606,6 +716,11 @@ private:
     vector<float> *Pri_pxErr, *Pri_pyErr, *Pri_pzErr, *Pri_ptErr;
     vector<int>   *Pri_fitValid, *Pri_fitPass, *Pri_assocPVPass, *Pri_assocPVIdx, *Pri_trackPVPass, *Pri_passAny;
     vector<float> *Pri_maxAbsDzPV, *Pri_maxAbsDxyPV;
+
+    // -- DiOnia common-vertex diagnostics --
+    vector<int>   *DiOnia_fitValid, *DiOnia_fitPass, *DiOnia_commonRecVtxPass;
+    vector<int>   *DiOnia_commonRecVtxIdx, *DiOnia_passAny;
+    vector<float> *DiOnia_Chi2, *DiOnia_ndof, *DiOnia_VtxProb;
 
     // -- Kaon tracks from Phi (or other meson) decay --
     vector<float> *Phi_K_1_px, *Phi_K_1_py, *Phi_K_1_pz;
