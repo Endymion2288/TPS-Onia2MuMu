@@ -11,3 +11,6 @@ __pycache__
 *.swp
 *.swo
 *.code-workspace
+.codex
+xcheng.cc
+doc/
