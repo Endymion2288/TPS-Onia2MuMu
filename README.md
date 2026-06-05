@@ -123,6 +123,12 @@ CMSSW_15_0_15/
             └── BuildFile.xml
 ```
 
+The operational CRAB workflow documentation for that submodule lives in
+`test/crabData/README.md`. In the current recovery flow,
+`prepare_recovery_tasks.sh` may leave
+`recovery_cache/generated_recovery_configs.txt` partial until the execution
+wrapper later resolves unfinished lumi coverage with `crab report`.
+
 ## Building
 
 From the CMSSW release area:
@@ -151,6 +157,8 @@ cmsRun HeavyFlavorAnalysis/TPS-Onia2MuMu/test/runMultiLepPAT_MCRun3_miniAOD_Run2
 cmsRun HeavyFlavorAnalysis/TPS-Onia2MuMu/test/ConfFile_cfg.py \
     AnalysisMode=JpsiUpsPhi
 ```
+
+Before rerunning a config, remove or change the `TFileService` output name. The default outputs are `mymultilep.root` for `ConfFile_cfg.py` and `mymultilep_MC_DPS1.root` for `runMultiLepPAT_MCRun3_miniAOD_Run2022.py`. If a file with the same name already exists, ROOT can abort either at final `TTree::Write()` or in `beginJob()` while building streamer info, sometimes as a segmentation violation. Prefer an explicit unique output, for example `outputFile=/tmp/chiw/multileppat_check.root`, for quick validation runs.
 
 ## Additional Documentation
 

@@ -1,6 +1,7 @@
 # Run 3 Triple-Quarkonia Analysis Master Plan
 
 Date: 2026-03-29
+Updated: 2026-05-05
 
 Analysts:
 - Chi Wang
@@ -23,6 +24,8 @@ Working milestones requested by the analysis team:
 
 This program is already beyond the "idea stage". There is now clear evidence of active reconstruction code, MC production, ntuple production, validation studies, fit-oriented workspaces, and channel-specific analysis paths across local EOS areas and GitHub repositories. The most mature common analysis backbone is the refactored `TPS-Onia2MuMu` package inside `CMSSW_15_0_15_JpsiJpsiPhi_refactor`, with additional dedicated work in `MuonPackedPFCandMatch`, `ParticleCand`, `ntuples-toHTCondor`, the `JpsiUpsPhi` production-and-hadd area, and the gen-level `JpsiJpsiPhi_MiniAOD_GenAnalyzer`.
 
+As of `2026-05-05`, the shared `TPS-Onia2MuMu` EDAnalyzer version for the flagship `JpsiJpsiPhi` path remains pinned and already submitted to CRAB for full `2022-2025` processing. Late-April repo activity shows that the active work has shifted further toward campaign monitoring, recovery handling, bookkeeping, selector validation, and turning the pinned baseline into documented efficiency and component-separation products.
+
 The key strategic conclusion is that the updated schedule is realistic only if the work is tiered against the real deadlines now in hand:
 - `2026-04-01 12:00 Europe/Zurich` and `2026-04-02` are status-and-direction deadlines, not result deadlines.
 - `2026-05-20` is a thesis-writing deadline, not a full-analysis freeze.
@@ -42,9 +45,9 @@ rather than promising a fully mature "unfolding" program for all three channels 
 
 ### 1.1 Updated Hard Deadlines
 
-- `2026-04-01 12:00 Europe/Zurich`: slide decks ready for the next-day reporting cycle
-- `2026-04-02`: each analyst delivers a report on status, blockers, and next technical steps
-- `2026-04-29`: internal technical milestone for first official efficiency objects and first flagship component-separation result
+- `2026-04-01 12:00 Europe/Zurich`: slide decks completed for the next-day reporting cycle
+- `2026-04-02`: analyst reports delivered, with the thesis mid-term reporting step carried out smoothly
+- `2026-04-29`: internal flagship milestone, now assessed as partially completed
 - `2026-05-20`: bachelor thesis text nearly complete, with methods, datasets, workflow, and preliminary physics material stable
 - `2026-08-31`: flagship-analysis freeze target for the first review-grade package
 - `November 2026`: projected pre-approval month
@@ -54,61 +57,74 @@ rather than promising a fully mature "unfolding" program for all three channels 
 #### Chi Wang Tracker
 
 Last updated:
-- `2026-03-29`
+- `2026-05-05`
 
 Weekly note:
-- 
+- the flagship `TPS-Onia2MuMu` baseline stayed pinned through late April, and the full `2022-2025` `JpsiJpsiPhi` CRAB campaign remained active through `2026-04-30`; the next step is to convert campaign operations and recovery work into one dated status summary and one shared bookkeeping artifact.
 
 Artifacts or links:
-- 
+- `test/crabData/`
+- `test/crabData/status_cache/latest_state.json`
+- `test/crabData/recovery_cache/`
+- `test/crabScript_New/`
+- `README.md`
+- `doc/multileppat_vertex_batch_integration_plan.md`
+- `doc/study_multileppat_vertexing_full_mc_match_plan.md`
 
 This week:
-- [ ] freeze the current status of `TPS-Onia2MuMu` and `MuonPackedPFCandMatch` for the report
+- [ ] publish one dated flagship CRAB status summary from `test/crabData/status_cache/` and the late-April recovery directories
 - [ ] assemble one code, data, and MC bookkeeping table shared by all three channels
-- [ ] summarize object-validation status and the implications of the packed-candidate study
+- [ ] summarize object-validation status and decide whether the packed-candidate study changes the nominal baseline or remains a validation appendix
 
 In progress:
-- [ ]
+- [ ] maintain and recover the running flagship campaign while protecting the pinned EDAnalyzer baseline
 
 Blocked:
-- [ ]
+- [ ] no single tracked bookkeeping artifact yet ties together campaign names, task directories, datasets, and output status across the three channels
 
 Done:
-- [ ]
+- [x] pinned the flagship `TPS-Onia2MuMu` EDAnalyzer version and submitted it to CRAB for full `2022-2025` processing
+- [x] documented the late-April CRAB recovery workflow and cache layout in the package README and `test/crabData/`
+- [x] completed the `2026-04-01` to `2026-04-02` report sprint, including the thesis mid-term report
 
 #### Xing Cheng Tracker
 
 Last updated:
-- `2026-03-29`
+- `2026-05-05`
 
 Weekly note:
-- 
+- `JpsiJpsiPhi` downstream fit and selector studies now have a package-level workflow basis, but the repo still does not show a frozen selector-versus-truth summary or a first documented flagship fit package.
 
 Artifacts or links:
-- 
+- `doc/multileppat_vertex_batch_integration_plan.md`
+- `doc/study_mass_spectra_roofit_run2023d.ipynb`
+- `doc/study_mass_spectra_iminuit_run2023d.ipynb`
 
 This week:
-- [ ] summarize the downstream fit and draw pipeline status for the report
-- [ ] summarize the `Full_MC_Production`, `JUPMCAnalyzer`, `JJP_MINIAOD_Analysis`, and `JpsiUpsPhi` workflow status for the report
-- [ ] identify the current best observables and cut flow for first flagship component separation
+- [ ] write one selector-validation summary for the flagship `JpsiJpsiPhi` baseline
+- [ ] turn the current RooFit and `iminuit` preparation flow into one documented first-result package or one explicit gap statement
+- [ ] map the required preliminary plots and tables into the thesis repository before `2026-05-20`
 
 In progress:
-- [ ]
+- [ ] compact flagship selector-comparison workflow for `JpsiJpsiPhi`
+- [ ] vertexing-versus-full-MC-matchedness validation for the nominal selector choice
 
 Blocked:
-- [ ]
+- [ ] the MC truth batch path is not yet fully migrated to the new `multileppat_vertex_batch` candidate skeleton
 
 Done:
-- [ ]
+- [x] completed the `2026-04-02` reporting checkpoint
+- [x] established the package-level `multileppat_vertex_batch` path for flagship `JpsiJpsiPhi` mass-study work
 
 #### Shared Tracker
 
-- [ ] `2026-04-01 12:00 Europe/Zurich`: slide decks frozen
-- [ ] `2026-04-02`: reports delivered
-- [ ] flagship-channel declaration recorded in writing
+- [x] `2026-04-01 12:00 Europe/Zurich`: slide decks frozen
+- [x] `2026-04-02`: reports delivered
+- [x] flagship-channel declaration recorded in writing
+- `2026-04-29` flagship milestone status: partially completed, with operational CRAB progress and integrated selector workflow evidence, but without a repo-visible final efficiency table or first documented component-separation package
 - [ ] one shared bookkeeping table for all channels exists
 - [ ] one MC campaign-definition cross-check exists between GitHub production repos and the shared CMSSW analysis
-- [ ] thesis chapter outline frozen
+- [ ] thesis repository content has moved beyond template structure into stable analysis-specific chapter text
 
 ## 2. Evidence-Based Current Status
 
@@ -122,16 +138,12 @@ What is already present there:
 - refactored runtime-configurable object and mass cuts
 - dataset and operations notes
 - validation test planning
-- active CRAB tooling for recent run eras
-- dirty working state in exactly the files expected for ongoing analysis development:
-  - `README.md`
-  - `interface/MultiLepPAT.h`
-  - `src/MultiLepPAT.cc`
-  - `test/ConfFile_cfg.py`
-  - `test/runMultiLepPAT_MCRun3_miniAOD_Run2022.py`
-  - new `doc/` content and `test/crabScript_New/`
+- active CRAB support for recent run eras, with `test/crabData/` as the main CRAB task-state directory and `test/crabScript_New/` as the year-split generation and helper layer
+- a pinned `TPS-Onia2MuMu` EDAnalyzer version already submitted to CRAB for full `2022-2025` flagship processing
+- integrated downstream `JpsiJpsiPhi` mass-study and selector-comparison interfaces in `test/multileppat_vertex_batch/`
+- new `doc/` content covering validation tests, mass-study integration, and vertex/truth study design
 
-This means the main analyzer is alive and still evolving, not frozen.
+This means the shared analyzer baseline is now fixed for large-scale flagship running. The active development has shifted to CRAB monitoring, bookkeeping, validation studies, and downstream fit preparation rather than core EDAnalyzer churn.
 
 ### 2.2 Muon-to-packed-candidate validation is already a dedicated subproject
 
@@ -150,6 +162,10 @@ This is important because it reduces one of the major detector-object risks for 
 ### 2.3 Strong local evidence of data and MC production
 
 `JpsiJpsiPhi` local status:
+- `test/crabData/` already contains `JpsiJpsiPhi` CRAB task directories across `Run2022C-G`, `Run2023C-D`, `Run2024C-I`, and `Run2025C-G` for `ParkingDoubleMuonLowMass[0-7]`
+- `test/crabScript_New/` now provides the single-template, year-split CRAB config generation layer for those run eras
+- late-April operational activity is visible through `2026-04-30` in `test/crabData/`, including `status_cache/`, multiple `__recover1` task directories, and `recovery_cache/{configs,lumimasks,reports}`
+- `README.md` now documents the recovery flow explicitly, including the fact that `prepare_recovery_tasks.sh` may leave `recovery_cache/generated_recovery_configs.txt` partial until later `crab report` resolution
 - `rootNtuple/ParkingDoubleMuonLowMass[0-7]/crab3_noTriVtx_*_Run2025C...G_MINIAOD` directories already exist
 - GEN-level, HepMC, miniAOD, and ntuple directories exist under `MC_samples/`
 - local test outputs exist for:
@@ -157,6 +173,7 @@ This is important because it reduces one of the major detector-object risks for 
   - `test_JpsiJpsiUps.root`
   - `mymultilep_JpsiUpsPhi_dataRun2023D.root`
   - `mymultilep_JpsiUpsPhi_mcRun2022_TPS.root`
+- `JpsiJpsiPhi` downstream mass studies are now organized around `multileppat_vertex_batch`, with package-level selector comparison and fit-preparation interfaces already smoke-tested on `Run2023D`
 
 `JpsiJpsiUpsilon` local status:
 - very substantial MC preparation under `JpsiJpsiUps/MC_samples/`
@@ -175,7 +192,7 @@ This is important because it reduces one of the major detector-object risks for 
 - local output files such as `mymultilep.root`, `mymultilep_Run2023_looseMassRange.root`, and `sample_JUP_2023.root` exist
 
 Interpretation:
-- `JpsiJpsiPhi` looks strongest on common framework maturity and already-visible 2025 ntuple production.
+- `JpsiJpsiPhi` looks strongest on common framework maturity, already-running `2022-2025` CRAB processing, and the new integrated downstream mass-study path.
 - `JpsiJpsiUpsilon` looks strongest on MC preparation and exploratory six-muon downstream analysis.
 - `JpsiUpsilonPhi` is stronger on run-era production assembly than the first pass suggested, especially on the 2022-2024 merge workflow and trigger inspection side, though it is still less integrated than `JpsiJpsiPhi` in the shared refactored analysis framework.
 
@@ -297,14 +314,36 @@ This is a major asset for:
 
 The project is advanced, but several items are still not yet in a review-ready state:
 
-- There is no single frozen baseline selection and ntuple schema for all three channels.
-- The `TPS-Onia2MuMu` and `MuonPackedPFCandMatch` repos are still dirty locally, so the code state used for large-scale efficiency production is not yet frozen.
+- There is still no single shared bookkeeping table tying together datasets, task directories, MC campaign labels, output paths, and current status across all three channels.
+- The local `TPS-Onia2MuMu` repo remains active, but the moving pieces are now concentrated in docs, notebook workflows, CRAB helper layers, and validation studies rather than the core flagship EDAnalyzer itself.
+- `JpsiJpsiPhi` mass-spectrum studies are now integrated around `multileppat_vertex_batch`, but the MC truth batch path is not yet fully migrated to the same candidate skeleton.
+- `MuonPackedPFCandMatch` still needs an explicit decision note stating whether it changes the nominal baseline or remains a validation appendix.
+- No repo-visible package yet documents the first official flagship efficiency tables, selector-versus-truth summary, and component-separation result in one place.
 - `ParticleCand` contains many untracked files, macros, and ROOT outputs, which means the six-muon downstream chain is not yet fully reproducible from a clean checkout.
 - `JpsiJpsiPhi` shows 2025 ntuple production locally, but `JpsiUpsilonPhi` does not yet show comparable 2024-2025 top-on in the same way.
 - The new GitHub MC repositories still need a formal cross-check against the shared refactored analyzer so that campaign labels, topology definitions, cuts, and ntuple schemas mean the same thing everywhere.
 - No unified response or efficiency production campaign is yet visible across all three channels.
 - No explicit systematic-uncertainty registry is visible yet.
-- No single "master note" yet ties together the three channels, the MC definitions, the fit models, the efficiency scheme, and the review path.
+- The thesis repo now provides a dedicated writing workspace, but the fetched abstract and chapter files still look template-like rather than analysis-specific.
+
+### 2.8 Thesis writing workspace now exists, but content maturity is still early
+
+Repo:
+- `Eric100911/bachelor-thesis-tps-thu-2026`
+
+What is already visible:
+- a dedicated thesis entry file, `thuthesis-chiwang-bachelor-tps.tex`
+- chapter scaffolding under `data/chap01.tex` through `data/chap04.tex`
+- an active commit on `2026-05-05`, `:art: Modified to follow bachelor thesis format.`
+
+What is not yet visible in the fetched files:
+- analysis-specific abstract text
+- analysis-specific chapter drafts
+- tables or figures tied directly to the current flagship analysis
+
+Interpretation:
+- the thesis workspace problem is now solved
+- the thesis content-completeness problem is not yet solved
 
 ## 3. Recommended Physics Strategy
 
@@ -389,13 +428,16 @@ Why CMS cares:
 
 Tasks:
 - unify CRAB or condor submission patterns across channels
+- keep `test/crabData/` as the main CRAB job-file and task-state area, with `test/crabScript_New/` used only as the config-generation and helper layer
+- monitor the pinned `2022-2025` flagship CRAB campaign instead of reopening the shared EDAnalyzer baseline
 - ensure each channel has a clean ntuple naming convention
 - close run-era coverage gaps
 - explicitly separate test outputs from production outputs
 
 Deliverables:
 - one standard directory layout
-- one production checklist per run era
+- one production checklist per run era and stream
+- one `test/crabData/` campaign inventory with status summary for the flagship channel
 - ntuple inventory table with event counts and integrated luminosities
 
 ### 4.4 Workstream D: MC truth definition and efficiency production
@@ -405,10 +447,12 @@ Tasks:
 - standardize generator-level, miniAOD-level, and reconstructed-level category definitions
 - build acceptance maps
 - build reconstruction and selection efficiencies
+- turn the ongoing `JpsiJpsiPhi` vertexing-versus-full-MC-matchedness study into a formal selector-validation input
 - perform closure tests from truth to reconstructed categories
 
 Deliverables:
 - per-channel efficiency tables
+- selector-versus-truth comparison tables for the flagship `JpsiJpsiPhi` baseline choice
 - response matrices or template-transfer objects
 - closure plots
 
@@ -425,6 +469,8 @@ Tasks:
   - DPS-like
   - TPS-like contributions
 - build the first simultaneous fit model
+- use `multileppat_vertex_batch` as the standard `JpsiJpsiPhi` mass-study frontend rather than notebook-local selection code
+- compare `all6_same_recVtx`, `Pri_fitValid`, and related selector choices in both RooFit and `iminuit` before freezing the nominal flagship selection
 - compare cut-based and fit-based stability
 - document low-statistics protections and fallback models
 
@@ -499,7 +545,7 @@ Why CMS cares:
 
 ### 5.1 Chi Wang should lead
 
-- CMSSW analyzer freeze for `TPS-Onia2MuMu`
+- protect the pinned CMSSW analyzer baseline for `TPS-Onia2MuMu` and monitor the CRAB production campaign
 - data and MC ntuple production bookkeeping
 - trigger, JSON, global-tag, and run-era consistency
 - packed-candidate and object-validation closure
@@ -538,49 +584,9 @@ Minimum update rule:
 
 ## 6. What Should Be Done Immediately
 
-These are the highest-priority next actions, with the first two tied directly to the `2026-04-01 12:00` and `2026-04-02` deadlines.
+These are the highest-priority next actions as of `2026-05-05`, after the early-April reporting checkpoints were completed and the late-April flagship CRAB recovery activity became visible in the repo.
 
-### 6.1 Complete the report sprint
-
-Action:
-- prepare and freeze slide decks by `2026-04-01 12:00 Europe/Zurich`
-- deliver status reports on `2026-04-02`
-
-Required content:
-- one current-status slide per channel
-- one slide on code and workflow readiness
-- one slide on blockers and immediate next steps
-- one slide defining the flagship channel and the thesis strategy
-
-Reason:
-- the next reporting checkpoint should be used to align scope, not to pretend the analysis is already review-grade
-
-### 6.2 Freeze the lead and secondary scopes
-
-Action:
-- officially declare `JpsiJpsiPhi` as the flagship channel
-- explicitly classify `JpsiJpsiUpsilon` and `JpsiUpsilonPhi` as active secondary channels with different strengths
-
-Output:
-- one written scope statement and one responsibilities table
-
-Reason:
-- without a written scope split, the thesis and summer plans will keep fighting each other
-
-### 6.3 Freeze one reconstruction baseline in git
-
-Action:
-- clean and tag the code state for:
-  - `TPS-Onia2MuMu`
-  - `MuonPackedPFCandMatch`
-
-Output:
-- frozen commit hashes for April production
-
-Reason:
-- efficiency studies must not be launched on a moving target
-
-### 6.4 Build one bookkeeping table for every channel
+### 6.1 Publish one shared bookkeeping table now
 
 Must include:
 - datasets
@@ -591,136 +597,107 @@ Must include:
 - MC campaign names and topology definitions
 - source repository or script that defines each MC campaign
 - ntuple output paths
+- CRAB task directories and status summary for the flagship channel
 - integrated luminosity target
 - current status
 
 Reason:
-- this will immediately expose missing 2024-2025-2026 coverage and stop accidental double-counting
-- it will also reveal where GitHub MC definitions and the shared analyzer baseline are already aligned, and where they are not
+- this is the clearest missing shared artifact in the repo
+- it is also the fastest way to align the thesis, CRAB operations, and downstream fit work
 
-### 6.5 Run a three-channel validation matrix
-
-Minimum matrix:
-- `JpsiJpsiPhi` on lead MC and one representative data file
-- `JpsiJpsiUpsilon` on lead MC and one representative data file
-- `JpsiUpsilonPhi` on lead MC or best available proxy and one representative data file
-
-Checks:
-- branch filling
-- candidate multiplicities
-- trigger-match flags
-- fit success rate
-- runtime and output size
-
-Reason:
-- you need an apples-to-apples readiness comparison before promising one-month delivery across channels
-
-### 6.6 Turn the MC into efficiency products, not just event samples
+### 6.2 Turn late-April CRAB operations into one dated flagship status summary
 
 Action:
-- define and produce the first official truth-to-reco efficiency objects:
-  - acceptance
-  - reconstruction efficiency
-  - selection efficiency
-  - trigger efficiency if not factorized separately
+- summarize the pinned `2022-2025` `JpsiJpsiPhi` campaign directly from `test/crabData/status_cache/`
+- list the late-April `__recover1` directories and the active `recovery_cache/` assets
+- distinguish normal task monitoring from recovery planning and execution
+
+Output:
+- one dated campaign-status note or table suitable for the thesis and for weekly review updates
 
 Reason:
-- this is the core of the April milestone
+- operational progress is real, but it is currently distributed across directories rather than presented as one review-usable artifact
 
-### 6.7 Start the first fit workspace now
+### 6.3 Keep the pinned flagship baseline protected while recovery tasks finish
 
 Action:
-- Xing leads a first compact fit for the flagship channel using the currently strongest observable set
-
-Expected first target:
-- background versus signal separation
-- then SPS-like versus DPS-like separation
-- TPS-like only if statistics and template stability justify it
+- keep the pinned `TPS-Onia2MuMu` EDAnalyzer version unchanged for the full flagship campaign
+- treat `test/crabData/` as the main task-state area and `test/crabScript_New/` as the generation and helper layer
+- record the frozen commit hash, campaign naming, and run-era coverage in the bookkeeping table
 
 Reason:
-- fits always take longer than expected; waiting for "perfect inputs" will miss the milestone
+- efficiency, selector-validation, and fit comparisons remain invalid if the production baseline moves underneath them
 
-### 6.8 Start thesis-writing structure immediately
+### 6.4 Freeze one explicit selector-validation summary for `JpsiJpsiPhi`
 
 Action:
-- prepare the thesis chapter skeleton now, before the physics result is final
-
-Must include:
-- motivation and context
-- dataset and trigger bookkeeping
-- software and CMSSW workflow
-- MC strategy
-- efficiency plan
-- current preliminary results section with clearly marked placeholders
+- use the existing `multileppat_vertex_batch` workflow to summarize the effect of `all6_same_recVtx`, `Pri_fitValid`, and related choices
+- connect the ongoing vertexing-versus-full-MC-matchedness study to the nominal selector recommendation
+- state clearly whether the selector is ready, still conditional, or still blocked by the MC truth batch migration gap
 
 Reason:
-- the `2026-05-20` thesis deadline is driven by writing maturity, not only by analysis maturity
+- the workflow basis exists, but the nominal-selector decision is not yet captured as one documented result
 
-### 6.9 Decide what the packed-candidate study changes in the baseline
+### 6.5 Produce one first documented efficiency-and-fit package or an explicit gap note
 
 Action:
-- write a one-page decision note:
-  - does `MuonPackedPFCandMatch` only validate robustness?
-  - or does it change the baseline muon or candidate treatment?
+- collect the first official flagship efficiency objects that are already stable enough to show
+- pair them with the current RooFit and `iminuit` selector-comparison outputs
+- if the package is not yet stable, write a short explicit gap note instead of implying silent completion
 
 Reason:
-- this study is valuable, but it must either become analysis policy or remain a validation appendix
+- the `2026-04-29` milestone can only be called partially completed unless one such package or gap note exists
 
-### 6.10 Start the master note immediately
+### 6.6 Convert the thesis repo from template structure to analysis-specific writing
 
 Action:
-- keep one living note file with:
-  - scope
-  - dataset table
-  - object definitions
-  - fit strategy
-  - efficiency plan
-  - systematics registry
+- keep using `Eric100911/bachelor-thesis-tps-thu-2026` as the writing workspace
+- replace the current template-like abstract and chapter bodies with analysis-specific content
+- prioritize motivation, datasets, trigger bookkeeping, CMSSW workflow, MC strategy, bookkeeping tables, and current flagship status
 
 Reason:
-- this is the single biggest lever for making the November pre-approval target plausible
+- the thesis repository structure is now in place, but the visible content still looks like template material
+
+### 6.7 Keep the packed-candidate study and the secondary channels scoped tightly
+
+Action:
+- write a short decision note for whether `MuonPackedPFCandMatch` changes the nominal baseline or stays as a validation appendix
+- keep `JpsiJpsiUpsilon` and `JpsiUpsilonPhi` active, but do not let them delay the flagship bookkeeping, selector-validation, and thesis-writing path
+
+Reason:
+- the main danger has shifted from missing infrastructure to scope dilution
 
 ## 7. Evaluation of the Updated Milestones
 
 ### 7.1 Milestone 1: `2026-04-01 12:00 Europe/Zurich`
 
-Requested outcome:
-- slide decks ready for the Thursday report
+Observed outcome:
+- slide decks were ready for the Thursday report on schedule
 
 Assessment:
-- `Green`
+- `Completed`
 
-CMS-style interpretation:
-- fully realistic if this is a status-and-plan deliverable
-- unrealistic only if treated as a demand for polished physics results
+Checkpoint note:
+- this milestone was handled as a status-and-direction checkpoint rather than a result freeze
+- that interpretation was correct for the state of the analysis
 
-Recommendation:
-- emphasize:
-  - current maturity of each channel
-  - the flagship decision
-  - concrete blockers
-  - the April and May work plan
+Follow-up:
+- keep the reported scope split, blockers, and April work plan visible in the live tracker sections rather than treating the slide deck as a dead artifact
 
 ### 7.2 Milestone 2: `2026-04-02`
 
-Requested outcome:
-- individual analysis reports delivered
+Observed outcome:
+- individual analysis reports were delivered
 
 Assessment:
-- `Green/Yellow`
+- `Completed`
 
-Why it is plausible:
-- the requested content is primarily organizational and technical
-- the code and workflow evidence is already strong enough to support a credible report
+Checkpoint note:
+- the thesis mid-term reporting step was carried out smoothly
+- the report cycle is now closed, and the remaining work is execution rather than report preparation
 
-Why it is risky:
-- it becomes risky only if the report overclaims final-result readiness
-
-Recommendation:
-- make the report explicit about:
-  - what is already demonstrated
-  - what is under active development
-  - what is still only planned
+Follow-up:
+- make sure the April bookkeeping, CRAB monitoring, validation, and fit tasks stay aligned with what was presented in the report cycle
 
 ### 7.3 Milestone 3: `2026-04-29`
 
@@ -728,20 +705,22 @@ Requested outcome:
 - first official flagship efficiencies and first component-separation result
 
 Assessment:
-- `Green/Yellow` for one flagship channel
-- `Red/Yellow` for all three channels at equal maturity
+- `Partially completed`
 
-CMS-style interpretation:
-- realistic if this means a first corrected flagship measurement with closure tests and a working template fit
-- unrealistic if this means full three-channel precision extraction with finalized systematics and harmonized all-era inputs
+Observed outcome:
+- the pinned flagship EDAnalyzer baseline remained stable
+- the full `2022-2025` flagship CRAB campaign stayed active through `2026-04-30`
+- recovery handling matured, with `status_cache/`, `recovery_cache/`, and multiple `__recover1` directories visible in `test/crabData/`
+- the integrated `multileppat_vertex_batch` selector-comparison basis exists for the flagship downstream workflow
+
+Still missing in the repo-visible evidence:
+- one shared bookkeeping table
+- one explicit selector-versus-truth summary for the nominal flagship selection
+- one documented first flagship efficiency-plus-fit package
 
 Recommendation:
-- define April 29 as:
-  - frozen flagship selection
-  - first efficiency maps
-  - first component-separation fit
-  - first corrected yield or fiducial cross section for `JpsiJpsiPhi`
-  - progress-only status for the secondary channels
+- treat `2026-04-29` as a real operational milestone, but not yet as a fully documented flagship physics milestone
+- use the first half of May to convert the operational work into review-usable tables, summaries, and preliminary plots
 
 ### 7.4 Milestone 4: `2026-05-20`
 
@@ -753,7 +732,8 @@ Assessment:
 
 Why it is plausible:
 - the thesis does not need the full final analysis result to be frozen by that date
-- much of the thesis can and should be completed from now through early May:
+- the dedicated thesis repository now exists
+- much of the thesis can still be completed from `2026-05-05` through `2026-05-20`:
   - motivation
   - datasets and triggers
   - software structure
@@ -763,10 +743,12 @@ Why it is plausible:
   - current status and preliminary plots
 
 Why it is risky:
+- the currently fetched abstract and chapter files still look template-like
 - it becomes risky if writing is delayed until the analysis is "done"
 - it also becomes risky if all three channels are forced into equal narrative weight
 
 Recommendation:
+- use the period from `2026-05-05` to `2026-05-20` as a writing-and-consolidation sprint
 - by May 20, the thesis should be missing only:
   - final polished result wording
   - final systematic tables
@@ -820,7 +802,7 @@ Recommendation:
 | Risk | Why it matters | Mitigation |
 | --- | --- | --- |
 | Scope creep across three channels | Three rare channels can easily become three half-finished analyses | Freeze `JpsiJpsiPhi` as flagship now |
-| Moving code baseline | Efficiency and systematic studies become invalid if the code keeps shifting | Tag production states in git |
+| Moving code baseline | Efficiency and systematic studies become invalid if the code keeps shifting | Keep the pinned flagship baseline fixed and record campaign hashes and CRAB task mapping |
 | Fragmented downstream workflow | Six-muon and fit studies may become irreproducible | Consolidate exploratory macros into tracked scripts |
 | 2026 data dependence | Availability and certification are not fully under analyst control | Keep 2026 top-on as stretch until certified |
 | Fit instability at low yields | DPS/TPS separation may be statistically fragile | Start with simplest stable model and add complexity only after closure |
@@ -833,24 +815,24 @@ Recommendation:
 
 | Week | Dates | Main focus | Exit criterion |
 | --- | --- | --- | --- |
-| 01 | 2026-03-30 to 2026-04-05 | Prepare slides by `2026-04-01 12:00 Europe/Zurich`, deliver reports on `2026-04-02`, freeze flagship and secondary scopes, and assemble the first shared bookkeeping table | Slides delivered, reports delivered, written scope split exists |
+| 01 | 2026-03-30 to 2026-04-05 | Completed report sprint: prepare slides by `2026-04-01 12:00 Europe/Zurich`, deliver reports on `2026-04-02`, freeze flagship and secondary scopes, and capture the thesis mid-term checkpoint | Slides delivered, reports delivered, written scope split exists, thesis mid-term report completed smoothly |
 
 ### Phase I: April Technical Consolidation
 
 | Week | Dates | Main focus | Exit criterion |
 | --- | --- | --- | --- |
-| 02 | 2026-04-06 to 2026-04-12 | Clean and tag active `TPS-Onia2MuMu` and `MuonPackedPFCandMatch` baselines; update trackers and bookkeeping | Frozen commit hashes and tracker entries exist |
-| 03 | 2026-04-13 to 2026-04-19 | Run representative MC and data validation for all three channels | Validation matrix and first readiness comparison exist |
-| 04 | 2026-04-20 to 2026-04-26 | Produce first official flagship MC efficiency objects and truth categories; start the flagship fit workspace | First acceptance-times-efficiency tables and first fit skeleton exist |
-| 05 | 2026-04-27 to 2026-05-03 | Deliver the April internal flagship milestone centered on `JpsiJpsiPhi` | First corrected flagship status package exists |
+| 02 | 2026-04-06 to 2026-04-12 | Protect the pinned `TPS-Onia2MuMu` baseline, launch and track the flagship CRAB campaign, and update trackers and bookkeeping | Pinned flagship baseline and submitted CRAB campaign are documented |
+| 03 | 2026-04-13 to 2026-04-19 | Run representative MC and data validation for all three channels, with integrated `JpsiJpsiPhi` selector-comparison and vertex/truth study inputs | Validation matrix and first readiness comparison exist |
+| 04 | 2026-04-20 to 2026-04-26 | Produce first official flagship MC efficiency objects, truth categories, and selector-versus-truth summaries; start the flagship fit workspace | First acceptance-times-efficiency tables, selector-validation summaries, and first fit skeleton exist |
+| 05 | 2026-04-27 to 2026-05-03 | Carry the April internal flagship milestone through late-April CRAB monitoring and recovery handling centered on `JpsiJpsiPhi` | Operational flagship status is documented and the remaining physics-package gaps are explicit |
 
-### Phase II: Thesis Write-Up Sprint
+### Phase II: May Documentation and Consolidation Sprint
 
 | Week | Dates | Main focus | Exit criterion |
 | --- | --- | --- | --- |
-| 06 | 2026-05-04 to 2026-05-10 | Write thesis chapters on motivation, datasets, triggers, software, and workflow; freeze chapter outline | Non-result thesis chapters are mostly drafted |
-| 07 | 2026-05-11 to 2026-05-17 | Add MC strategy, efficiency plan, bookkeeping tables, and preliminary plots to the thesis | Thesis contains stable technical content and placeholders only where needed |
-| 08 | 2026-05-18 to 2026-05-24 | Reach the `2026-05-20` thesis-near-final milestone and record the remaining result-dependent gaps | Thesis is nearly complete in writing, with only final-result polish left open |
+| 06 | 2026-05-04 to 2026-05-10 | Build the shared bookkeeping table, write the flagship CRAB status summary, and replace thesis template scaffolding with analysis-specific chapter mapping | One bookkeeping artifact and one dated flagship campaign summary exist; thesis chapter structure is analysis-specific |
+| 07 | 2026-05-11 to 2026-05-17 | Add MC strategy, selector-validation summary, efficiency-plan text, and preliminary flagship plots to the thesis | Thesis contains stable technical content and an explicit statement of which flagship result pieces are done versus still open |
+| 08 | 2026-05-18 to 2026-05-24 | Reach the `2026-05-20` thesis-near-final milestone and record the remaining result-dependent gaps | Thesis is nearly complete in writing, with only final-result polish and any unresolved flagship gaps left open |
 
 ### Phase III: Summer Flagship Maturation
 
@@ -893,32 +875,43 @@ Recommendation:
 
 ### 10.1 By `2026-04-02`
 
-Required:
-- slides ready by `2026-04-01 12:00 Europe/Zurich`
-- reports delivered by `2026-04-02`
-- written flagship versus secondary-channel scope split
+Status:
+- partially completed checkpoint
+
+Completed:
+- slides were ready by `2026-04-01 12:00 Europe/Zurich`
+- reports were delivered by `2026-04-02`
+- the thesis mid-term report was carried out smoothly
+- the flagship versus secondary-channel scope split is recorded in this plan
+
+Carry-over into Phase I:
 - shared bookkeeping table draft
 
 ### 10.2 By `2026-04-29`
 
-Required:
-- flagship channel frozen
-- efficiency objects available
-- first closure test complete
-- first fit-based component separation complete
-- one corrected flagship number or limit produced
+Status:
+- partially completed
 
-Nice to have:
-- first secondary-channel fit status
-- first note skeleton
+Evidenced:
+- pinned flagship EDAnalyzer baseline kept fixed and linked to the running `2022-2025` CRAB campaign
+- late-April CRAB monitoring and recovery structure are visible through `test/crabData/`, `status_cache/`, and `recovery_cache/`
+- integrated flagship selector-comparison workflow basis exists through `multileppat_vertex_batch`
+
+Still needed:
+- one shared bookkeeping table
+- one explicit selector-versus-truth summary for the nominal flagship selection
+- clearly documented flagship efficiency tables
+- one documented first fit-based component-separation package or one explicit statement of the remaining gap
 
 ### 10.3 By `2026-05-20`
 
 Required:
 - thesis text nearly complete in writing
-- methods, datasets, and software workflow sections stable
+- thesis repository content moved from template structure to analysis-specific chapter text
+- methods, datasets, software workflow, and CRAB status sections stable
 - MC and efficiency strategy documented
-- preliminary flagship plots included
+- preliminary flagship plots and bookkeeping tables included
+- explicit open-gap list included wherever the flagship result is not yet frozen
 
 Nice to have:
 - first corrected flagship number or limit included in thesis draft
@@ -942,12 +935,16 @@ Required:
 
 ## 11. Final Recommendation
 
-The collaboration should treat the next three days as a `report-and-scope sprint`, the next seven weeks as a `thesis-and-flagship-method sprint`, the summer as a `flagship-analysis freeze sprint`, and autumn as `review hardening`. That is the most realistic way to satisfy the fixed writing deadlines while still protecting a credible November 2026 pre-approval target.
+The collaboration should treat the early-April `report-and-scope sprint` as completed, late April as a `pinned-baseline execution and recovery sprint`, the current period from `2026-05-05` to `2026-05-20` as a `writing-and-consolidation sprint`, the summer as a `flagship-analysis freeze sprint`, and autumn as `review hardening`. That is the most realistic way to satisfy the fixed writing deadlines while still protecting a credible November 2026 pre-approval target.
 
 The current evidence already supports optimism:
 - reconstruction code is real and active
+- the flagship `TPS-Onia2MuMu` baseline is already pinned and submitted to CRAB for full `2022-2025` processing
+- late-April CRAB recovery and cache-maintenance work is visible and documented
 - data and MC production already exist
 - fit-oriented work has started
+- `JpsiJpsiPhi` downstream mass studies now have a package-level workflow through `multileppat_vertex_batch`
+- the thesis repo now exists as a dedicated writing workspace
 - Xing's visible role now includes explicit full-chain JJP/JUP MC production and MiniAOD truth-analysis repositories, not only downstream fitting or merge scripts
 - the Chi/Xing skill split is complementary
 
@@ -960,6 +957,10 @@ If scope is controlled now, this can become a credible CMS-style analysis progra
 Local paths inspected:
 - `CMSSW_15_0_15_JpsiJpsiPhi_refactor/src/HeavyFlavorAnalysis/TPS-Onia2MuMu/`
 - `CMSSW_15_0_15_JpsiJpsiPhi_refactor/src/HeavyFlavorAnalysis/MuonPackedPFCandMatch/`
+- `CMSSW_15_0_15_JpsiJpsiPhi_refactor/src/HeavyFlavorAnalysis/TPS-Onia2MuMu/test/crabData/`
+- `CMSSW_15_0_15_JpsiJpsiPhi_refactor/src/HeavyFlavorAnalysis/TPS-Onia2MuMu/test/crabScript_New/`
+- `CMSSW_15_0_15_JpsiJpsiPhi_refactor/src/HeavyFlavorAnalysis/TPS-Onia2MuMu/doc/multileppat_vertex_batch_integration_plan.md`
+- `CMSSW_15_0_15_JpsiJpsiPhi_refactor/src/HeavyFlavorAnalysis/TPS-Onia2MuMu/doc/study_multileppat_vertexing_full_mc_match_plan.md`
 - `JpsiJpsiPhi/rootNtuple/`
 - `JpsiJpsiPhi/MC_samples/`
 - `JpsiJpsiUps/MC_samples/`
@@ -981,6 +982,7 @@ GitHub repositories inspected:
 - `Eric100911/ParticleCand`
 - `Eric100911/ntuples-toHTCondor`
 - `Eric100911/JpsiJpsiPhi_MiniAOD_GenAnalyzer`
+- `Eric100911/bachelor-thesis-tps-thu-2026`
 - `Endymion2288/TPS-Onia2MuMu`
 - `Endymion2288/JpsiJpsiPhi-workspace`
 - `Endymion2288/JpsiJpsiUps-workspace`
@@ -996,6 +998,10 @@ Selected git-history evidence cross-checked locally:
 - `Endymion` commits titled `fix: repair git object`
 
 Selected GitHub file evidence inspected:
+- `Eric100911/bachelor-thesis-tps-thu-2026: thuthesis-chiwang-bachelor-tps.tex`
+- `Eric100911/bachelor-thesis-tps-thu-2026: data/abstract.tex`
+- `Eric100911/bachelor-thesis-tps-thu-2026: data/chap01.tex`
+- `Eric100911/bachelor-thesis-tps-thu-2026: data/chap04.tex`
 - `Endymion2288/Full_MC_Production: README.md`
 - `Endymion2288/Full_MC_Production: dag_generator.py`
 - `Endymion2288/Full_MC_Production: processing/run_chain.sh`
@@ -1008,6 +1014,7 @@ Selected GitHub file evidence inspected:
 - `Endymion2288/TPS-Onia2MuMu: README.md`
 
 Selected GitHub commit evidence inspected:
+- `Eric100911/bachelor-thesis-tps-thu-2026`: `:art: Modified to follow bachelor thesis format.` (`aea706de2fdc8eab257c278a4acf23b346e60f15`, `2026-05-05`)
 - `Endymion2288/Full_MC_Production`: `feat: first edition of LHE2MINIAOD`
 - `Endymion2288/Full_MC_Production`: `fix: successfully test`
 - `Endymion2288/JUPMCAnalyzer`: `feat: first edition for analyze the JUP MC`
