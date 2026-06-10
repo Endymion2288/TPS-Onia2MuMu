@@ -304,6 +304,11 @@ private:
     void storeSingleJpsiCandidatesForMC(
         const reco::Vertex& beamSpotV,
         const edm::Handle<reco::GenParticleCollection>& genParticles);
+    void storeSingleUpsCandidatesForMC(
+        const reco::Vertex& beamSpotV,
+        const edm::Handle<reco::GenParticleCollection>& genParticles);
+    void fillRecoKaonTrackBlock(
+        const edm::Handle<reco::GenParticleCollection>& genParticles);
     void storeSinglePhiCandidatesForMC(
         const reco::Vertex& beamSpotV,
         const edm::Handle<reco::GenParticleCollection>& genParticles);
@@ -324,9 +329,9 @@ private:
     
     // Kinematics extraction (with and without uncertainties)
     static void getDynamics(const RefCountedKinematicParticle& arg_Part,
-                            double& res_pt, double& res_eta, double& res_phi);
+                            double& res_pt, double& res_eta, double& res_phi, double& res_y);
     static void getDynamics(double arg_mass, double arg_px, double arg_py, double arg_pz,
-                            double& res_pt, double& res_eta, double& res_phi);
+                            double& res_pt, double& res_eta, double& res_phi, double& res_y);
     // Momentum uncertainty extraction from kinematic fit covariance
     static void getMomentumErrors(const RefCountedKinematicParticle& arg_Part,
                                   double& res_pxErr, double& res_pyErr, double& res_pzErr,
@@ -444,12 +449,18 @@ private:
         vector<float>* br_Chi2, vector<float>* br_ndof, vector<float>* br_VtxProb,
         vector<float>* br_px, vector<float>* br_py, vector<float>* br_pz,
         vector<float>* br_phi, vector<float>* br_eta, vector<float>* br_pt,
+        vector<float>* br_y,
         vector<float>* br_pxErr, vector<float>* br_pyErr, vector<float>* br_pzErr,
         vector<float>* br_ptErr);
     std::pair<int, float> matchRecoMuonToStoredGenMuon(
         unsigned int muIdx,
         const edm::Handle<reco::GenParticleCollection>& genParticles,
-        bool requireJpsiMother) const;
+        int requiredMotherPdgId) const;
+    int findCommonStoredGenMotherIdx(
+        int daughter1StoredIdx,
+        int daughter2StoredIdx,
+        int requiredMotherPdgId,
+        const edm::Handle<reco::GenParticleCollection>& genParticles) const;
 
     // Store sentinel values for failed 3-body vertex fit
     void storeSentinelPri();
@@ -500,7 +511,12 @@ private:
     // -- Track (kaon/pion) selection (StringCutObjectSelector based) --
     std::string trackSelectionStr_;
     StringCutObjectSelector<pat::PackedCandidate> trackSelector_;
-    
+
+    // -- Track quality selection (applied to bestTrack() for phi reconstruction) --
+    std::string trackQualityStr_;
+    StringCutObjectSelector<reco::Track> trackQualitySelector_;
+    bool requireRecoKaonTrackHighPurity_;
+
     // -- Primary vertex quality cuts (configurable) --
     int    pvNdofMin_;
     double pvMaxAbsZ_;
@@ -601,6 +617,8 @@ private:
     unsigned long long currentEvent_;
     std::vector<edm::View<pat::PackedCandidate>::const_iterator> nonMuonTrack_;
     std::unordered_map<unsigned int, int> handleToNtupleIndex_;
+    std::unordered_map<int, unsigned int> ntupleToHandleIndex_;
+    std::unordered_map<unsigned int, int> nonMuonTrackIdxToRecoKaonTrackIdx_;
     
     // Muon pair candidates
     std::vector<muList_t> muPairCand_Onia1_;  // J/psi (or 1st quarkonium)
@@ -751,7 +769,7 @@ private:
     // -- Resonance candidate indices --
     vector<float> *Jpsi_1_mu_1_Idx, *Jpsi_1_mu_2_Idx;
     vector<float> *Jpsi_2_mu_1_Idx, *Jpsi_2_mu_2_Idx;
-    vector<float> *Phi_K_1_Idx, *Phi_K_2_Idx;
+    vector<int>   *Phi_K_1_RecoKaonTrackIdx = nullptr, *Phi_K_2_RecoKaonTrackIdx = nullptr;
     // [Comment] Storing raw dxy and dz values for muons and the fitted candidates is good redundancy.
     // -- Reconstructed resonances: mass, vertex, kinematics --
     vector<float> *Jpsi_1_mass, *Jpsi_1_massErr, *Jpsi_1_massDiff;
@@ -762,9 +780,9 @@ private:
     vector<float> *Jpsi_2_ctau, *Jpsi_2_ctauErr, *Jpsi_2_Chi2, *Jpsi_2_ndof, *Jpsi_2_VtxProb;
     vector<float> *Phi_ctau, *Phi_ctauErr, *Phi_Chi2, *Phi_ndof, *Phi_VtxProb;
 
-    vector<float> *Jpsi_1_phi, *Jpsi_1_eta, *Jpsi_1_pt;
-    vector<float> *Jpsi_2_phi, *Jpsi_2_eta, *Jpsi_2_pt;
-    vector<float> *Phi_phi, *Phi_eta, *Phi_pt;
+    vector<float> *Jpsi_1_phi, *Jpsi_1_eta, *Jpsi_1_pt, *Jpsi_1_y;
+    vector<float> *Jpsi_2_phi, *Jpsi_2_eta, *Jpsi_2_pt, *Jpsi_2_y;
+    vector<float> *Phi_phi, *Phi_eta, *Phi_pt, *Phi_y;
 
     vector<float> *Jpsi_1_px, *Jpsi_1_py, *Jpsi_1_pz;
     vector<float> *Jpsi_2_px, *Jpsi_2_py, *Jpsi_2_pz;
@@ -783,7 +801,7 @@ private:
     vector<float> *SingleJpsi_ctau = nullptr, *SingleJpsi_ctauErr = nullptr;
     vector<float> *SingleJpsi_Chi2 = nullptr, *SingleJpsi_ndof = nullptr, *SingleJpsi_VtxProb = nullptr;
     vector<float> *SingleJpsi_px = nullptr, *SingleJpsi_py = nullptr, *SingleJpsi_pz = nullptr;
-    vector<float> *SingleJpsi_phi = nullptr, *SingleJpsi_eta = nullptr, *SingleJpsi_pt = nullptr;
+    vector<float> *SingleJpsi_phi = nullptr, *SingleJpsi_eta = nullptr, *SingleJpsi_pt = nullptr, *SingleJpsi_y = nullptr;
     vector<float> *SingleJpsi_pxErr = nullptr, *SingleJpsi_pyErr = nullptr;
     vector<float> *SingleJpsi_pzErr = nullptr, *SingleJpsi_ptErr = nullptr;
     vector<int>   *SingleJpsi_fitValid = nullptr, *SingleJpsi_fitPass = nullptr;
@@ -791,21 +809,40 @@ private:
     vector<float> *SingleJpsi_prefitEta = nullptr, *SingleJpsi_prefitPhi = nullptr;
     vector<int>   *SingleJpsi_mu1_Idx = nullptr, *SingleJpsi_mu2_Idx = nullptr;
     vector<int>   *SingleJpsi_mu1_charge = nullptr, *SingleJpsi_mu2_charge = nullptr;
+    vector<int>   *SingleJpsi_genMatchIdx = nullptr;
     vector<int>   *SingleJpsi_mu1_genMatchIdx = nullptr, *SingleJpsi_mu2_genMatchIdx = nullptr;
     vector<float> *SingleJpsi_mu1_genMatchChi2 = nullptr, *SingleJpsi_mu2_genMatchChi2 = nullptr;
 
+    int nSingleUpsCand = 0;
+    vector<float> *SingleUps_mass = nullptr, *SingleUps_massErr = nullptr, *SingleUps_massDiff = nullptr;
+    vector<float> *SingleUps_ctau = nullptr, *SingleUps_ctauErr = nullptr;
+    vector<float> *SingleUps_Chi2 = nullptr, *SingleUps_ndof = nullptr, *SingleUps_VtxProb = nullptr;
+    vector<float> *SingleUps_px = nullptr, *SingleUps_py = nullptr, *SingleUps_pz = nullptr;
+    vector<float> *SingleUps_phi = nullptr, *SingleUps_eta = nullptr, *SingleUps_pt = nullptr, *SingleUps_y = nullptr;
+    vector<float> *SingleUps_pxErr = nullptr, *SingleUps_pyErr = nullptr;
+    vector<float> *SingleUps_pzErr = nullptr, *SingleUps_ptErr = nullptr;
+    vector<int>   *SingleUps_fitValid = nullptr, *SingleUps_fitPass = nullptr;
+    vector<float> *SingleUps_prefitMass = nullptr, *SingleUps_prefitPt = nullptr;
+    vector<float> *SingleUps_prefitEta = nullptr, *SingleUps_prefitPhi = nullptr;
+    vector<int>   *SingleUps_mu1_Idx = nullptr, *SingleUps_mu2_Idx = nullptr;
+    vector<int>   *SingleUps_mu1_charge = nullptr, *SingleUps_mu2_charge = nullptr;
+    vector<int>   *SingleUps_genMatchIdx = nullptr;
+    vector<int>   *SingleUps_mu1_genMatchIdx = nullptr, *SingleUps_mu2_genMatchIdx = nullptr;
+    vector<float> *SingleUps_mu1_genMatchChi2 = nullptr, *SingleUps_mu2_genMatchChi2 = nullptr;
+
     int nSinglePhiCand = 0;
+    int nRecoKaonTrack = 0;
     vector<float> *SinglePhi_mass = nullptr, *SinglePhi_massErr = nullptr, *SinglePhi_massDiff = nullptr;
     vector<float> *SinglePhi_ctau = nullptr, *SinglePhi_ctauErr = nullptr;
     vector<float> *SinglePhi_Chi2 = nullptr, *SinglePhi_ndof = nullptr, *SinglePhi_VtxProb = nullptr;
     vector<float> *SinglePhi_px = nullptr, *SinglePhi_py = nullptr, *SinglePhi_pz = nullptr;
-    vector<float> *SinglePhi_phi = nullptr, *SinglePhi_eta = nullptr, *SinglePhi_pt = nullptr;
+    vector<float> *SinglePhi_phi = nullptr, *SinglePhi_eta = nullptr, *SinglePhi_pt = nullptr, *SinglePhi_y = nullptr;
     vector<float> *SinglePhi_pxErr = nullptr, *SinglePhi_pyErr = nullptr;
     vector<float> *SinglePhi_pzErr = nullptr, *SinglePhi_ptErr = nullptr;
     vector<int>   *SinglePhi_fitValid = nullptr, *SinglePhi_fitPass = nullptr;
     vector<float> *SinglePhi_prefitMass = nullptr, *SinglePhi_prefitPt = nullptr;
     vector<float> *SinglePhi_prefitEta = nullptr, *SinglePhi_prefitPhi = nullptr;
-    vector<int>   *SinglePhi_K1_nonMuonTrackIdx = nullptr, *SinglePhi_K2_nonMuonTrackIdx = nullptr;
+    vector<int>   *SinglePhi_K1_RecoKaonTrackIdx = nullptr, *SinglePhi_K2_RecoKaonTrackIdx = nullptr;
     vector<int>   *SinglePhi_K1_charge = nullptr, *SinglePhi_K2_charge = nullptr;
     vector<float> *SinglePhi_K1_pt = nullptr, *SinglePhi_K1_eta = nullptr, *SinglePhi_K1_phi = nullptr;
     vector<float> *SinglePhi_K2_pt = nullptr, *SinglePhi_K2_eta = nullptr, *SinglePhi_K2_phi = nullptr;
@@ -817,18 +854,35 @@ private:
     vector<int>   *SinglePhi_K1_passTrackPV = nullptr, *SinglePhi_K2_passTrackPV = nullptr;
     vector<float> *SinglePhi_K1_dzPV = nullptr, *SinglePhi_K2_dzPV = nullptr;
     vector<float> *SinglePhi_K1_dxyPV = nullptr, *SinglePhi_K2_dxyPV = nullptr;
+    vector<int>   *SinglePhi_genMatchIdx = nullptr;
     vector<int>   *SinglePhi_K1_genMatchIdx = nullptr, *SinglePhi_K2_genMatchIdx = nullptr;
     vector<int>   *SinglePhi_K1_genMatchSource = nullptr, *SinglePhi_K2_genMatchSource = nullptr;
     vector<float> *SinglePhi_K1_genMatchChi2 = nullptr, *SinglePhi_K2_genMatchChi2 = nullptr;
     vector<int>   *SinglePhi_commonAssocPVPass = nullptr, *SinglePhi_commonAssocPVIdx = nullptr;
     vector<int>   *SinglePhi_trackPVPass = nullptr, *SinglePhi_vertexCriteriaPass = nullptr;
     vector<float> *SinglePhi_maxAbsDzPV = nullptr, *SinglePhi_maxAbsDxyPV = nullptr;
-    
+
+    // RecoKaonTrack block: lightweight per-track storage for phi/kaon efficiency
+    vector<float> *RecoKaonTrack_pt = nullptr, *RecoKaonTrack_eta = nullptr, *RecoKaonTrack_phi = nullptr;
+    vector<float> *RecoKaonTrack_px = nullptr, *RecoKaonTrack_py = nullptr, *RecoKaonTrack_pz = nullptr;
+    vector<int>   *RecoKaonTrack_charge = nullptr;
+    vector<int>   *RecoKaonTrack_fromPV = nullptr, *RecoKaonTrack_pvAssocQuality = nullptr;
+    vector<int>   *RecoKaonTrack_vertexId = nullptr;
+    vector<float> *RecoKaonTrack_dzPV = nullptr, *RecoKaonTrack_dxyPV = nullptr;
+    vector<float> *RecoKaonTrack_dzAssocPV = nullptr, *RecoKaonTrack_dxyAssocPV = nullptr;
+    vector<int>   *RecoKaonTrack_passDzPV = nullptr, *RecoKaonTrack_passDxyPV = nullptr;
+    vector<int>   *RecoKaonTrack_passTrackPV = nullptr;
+    vector<float> *RecoKaonTrack_normalizedChi2 = nullptr;
+    vector<int>   *RecoKaonTrack_numberOfHits = nullptr, *RecoKaonTrack_isHighPurity = nullptr;
+    vector<int>   *RecoKaonTrack_genMatchIdx = nullptr, *RecoKaonTrack_genMatchSource = nullptr;
+    vector<float> *RecoKaonTrack_genMatchChi2 = nullptr;
+    vector<int>   *RecoKaonTrack_usedInSinglePhi = nullptr;
+
     // -- Primary (combined) vertex --
     vector<float> *Pri_mass, *Pri_massErr;
     vector<float> *Pri_ctau, *Pri_ctauErr, *Pri_Chi2, *Pri_ndof, *Pri_VtxProb;
     vector<float> *Pri_px, *Pri_py, *Pri_pz;
-    vector<float> *Pri_phi, *Pri_eta, *Pri_pt;
+    vector<float> *Pri_phi, *Pri_eta, *Pri_pt, *Pri_y;
     vector<float> *Pri_pxErr, *Pri_pyErr, *Pri_pzErr, *Pri_ptErr;
     vector<int>   *Pri_fitValid, *Pri_fitPass, *Pri_assocPVPass, *Pri_assocPVIdx, *Pri_trackPVPass, *Pri_passAny;
     vector<float> *Pri_maxAbsDzPV, *Pri_maxAbsDxyPV;
@@ -861,7 +915,7 @@ private:
     vector<float> *Ups_mass, *Ups_massErr, *Ups_massDiff;
     vector<float> *Ups_ctau, *Ups_ctauErr, *Ups_Chi2, *Ups_ndof, *Ups_VtxProb;
     vector<float> *Ups_px, *Ups_py, *Ups_pz;
-    vector<float> *Ups_phi, *Ups_eta, *Ups_pt;
+    vector<float> *Ups_phi, *Ups_eta, *Ups_pt, *Ups_y;
     vector<float> *Ups_pxErr, *Ups_pyErr, *Ups_pzErr, *Ups_ptErr;
 
     // ======================== MC gen-level branches ========================
